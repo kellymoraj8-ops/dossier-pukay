@@ -15,12 +15,12 @@ La documentación corresponde a la **Parte I: Levantar los Drivers (Sesión 1)**
 
 | N.º | Documento | Contenido | Tablas |
 |---|---|---|---|
-| 1 | [El Caso PUKAY](01-el-caso-pukay.md) | Descripción del proyecto, problemática, procesos y alcance. | Tabla 1 |
-| 2 | [Convención de Identificadores](02-convencion-identificadores.md) | Identificadores arquitectónicos y continuidad del dossier. | Tablas 2 y 3 |
-| 3 | [Stakeholders y Concerns](03-stakeholders-concerns.md) | Actores involucrados, intereses y nivel de influencia. | Tabla 4 |
-| 4 | [Restricciones y Supuestos](04-restricciones-supuestos.md) | Condiciones técnicas, organizacionales y supuestos del proyecto. | Tabla 5 |
-| 5 | [Drivers Arquitectónicos](05-drivers-arquitectonicos.md) | Priorización de los drivers D1 a D5. | Tabla 6 |
-| 6 | [Escenarios de Calidad](06-escenarios-calidad.md) | Escenarios E1 a E5 y sus medidas de verificación. | Tablas 7 a 12 |
+| 1 | [El Caso PUKAY](a-caso-pukay.md) | Descripción del proyecto, problemática, procesos y alcance. | Tabla 1 |
+| 2 | [Convención de Identificadores](b-convencion-identificadores.md) | Identificadores arquitectónicos y continuidad del dossier. | Tablas 2 y 3 |
+| 3 | [Stakeholders y Concerns](c-stakeholders-concerns.md) | Actores involucrados, intereses y nivel de influencia. | Tabla 4 |
+| 4 | [Restricciones y Supuestos](d-restricciones-supuestos.md) | Condiciones técnicas, organizacionales y supuestos del proyecto. | Tabla 5 |
+| 5 | [Drivers Arquitectónicos](e-drivers-arquitectonicos.md) | Priorización de los drivers D1 a D5. | Tabla 6 |
+| 6 | [Escenarios de Calidad](f-escenarios-calidad.md) | Escenarios E1 a E5 y sus medidas de verificación. | Tablas 7 a 12 |
 
 ---
 
@@ -76,7 +76,7 @@ Cada driver se relaciona con un escenario verificable.
 
 Los escenarios incluyen fuente, estímulo, entorno, artefacto, respuesta y medida.
 
-**[Consultar los escenarios de calidad completos](06-escenarios-calidad.md)**
+**[Consultar los escenarios de calidad completos](f-escenarios-calidad.md)**
 
 ---
 
@@ -93,11 +93,15 @@ La documentación utiliza como referencia:
 
 ## Navegación
 
-**[Volver al índice general de documentación](../README.md)**
+**[Volver al README principal del repositorio](../../README.md)**
+
+**[Consultar el índice general de documentación](../README.md)**
 
 **[Consultar las vistas C4](../02-vistas-c4/c4-nivel1.md)**
 
-**[Consultar los registros ADR](../03-adr/ADR-001-persistencia-mysql.md)**
+**[Consultar los registros ADR](../03-adr/)**
+
+**[Consultar el registro del uso de IA](../04-registro-ia.md)**
 
 ---
 
