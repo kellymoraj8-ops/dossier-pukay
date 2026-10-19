@@ -1,11 +1,11 @@
 
-# 🏃 PUKAY | Dossier de Arquitectura de Software
+# PUKAY | Dossier de Arquitectura de Software
 
 ### Sistema móvil de seguimiento de actividades deportivas
 
 ---
 
-## 👥 Integrantes del proyecto
+## Integrantes del proyecto
 
 - **Oscar Hernán Arévalo Narváez**
 - **Kelly Johana Mora Arteaga**
@@ -13,7 +13,7 @@
 
 ---
 
-## 📌 1. Descripción del proyecto
+## 1. Descripción del proyecto
 
 **PUKAY** es una aplicación móvil desarrollada para Android, orientada al registro, seguimiento y control de actividades deportivas.
 
@@ -25,7 +25,7 @@ La documentación se estructura mediante el modelo C4 y los registros de decisio
 
 ---
 
-## 🎯 2. Objetivo del proyecto
+## 2. Objetivo del proyecto
 
 Diseñar y documentar una arquitectura de software organizada, mantenible y escalable para el sistema PUKAY, estableciendo una comunicación entre la aplicación móvil Android, una API REST desarrollada en PHP y una base de datos MySQL.
 
@@ -40,7 +40,7 @@ Diseñar y documentar una arquitectura de software organizada, mantenible y esca
 
 ---
 
-## 🛠️ 3. Tecnologías utilizadas
+## 3. Tecnologías utilizadas
 
 | Componente | Tecnología |
 |---|---|
@@ -58,7 +58,7 @@ Diseñar y documentar una arquitectura de software organizada, mantenible y esca
 
 ---
 
-## 🏗️ 4. Arquitectura general del sistema
+## 4. Arquitectura general del sistema
 
 PUKAY utiliza una arquitectura cliente-servidor en la que la aplicación móvil se comunica con una API REST encargada de procesar las solicitudes y acceder a la base de datos MySQL.
 
@@ -67,10 +67,10 @@ PUKAY utiliza una arquitectura cliente-servidor en la que la aplicación móvil 
 
 ```mermaid
 flowchart LR
-    D["👤 Deportista<br/>(Usuario)"]
-    A["📱 Aplicación PUKAY<br/>(Android - MVVM - Repository)"]
-    API["🌐 API REST<br/>(PHP - Apache/XAMPP)"]
-    DB[("🗄️ Base de datos<br/>MySQL")]
+    D[" Deportista<br/>(Usuario)"]
+    A[" Aplicación PUKAY<br/>(Android - MVVM - Repository)"]
+    API[" API REST<br/>(PHP - Apache/XAMPP)"]
+    DB[(" Base de datos<br/>MySQL")]
 
     D -->|"Registra actividades<br/>Crea metas<br/>Consulta progreso"| A
     A -->|"Solicitudes y respuestas<br/>HTTP(S) / JSON"| API
@@ -103,13 +103,13 @@ flowchart LR
 
 En esta sección se encuentran los enlaces a los documentos que conforman el dossier de arquitectura.
 
-### 📁 5.1. Contexto y drivers arquitectónicos
+### 5.1. Contexto y drivers arquitectónicos
 
 Documento que describe el contexto del sistema, sus necesidades y los factores que influyen en las decisiones de arquitectura.
 
 📄 **[Ver contexto y drivers arquitectónicos](01-contexto-y-drivers.md)**
 
-### 📁 5.2. Vistas de arquitectura C4
+### 5.2. Vistas de arquitectura C4
 
 Los diagramas C4 permiten representar visualmente la arquitectura del sistema desde diferentes niveles de abstracción.
 
@@ -117,15 +117,15 @@ Los diagramas C4 permiten representar visualmente la arquitectura del sistema de
 
 Identifica al deportista como usuario principal y su interacción con PUKAY.
 
-🏗️ **[Ver diagrama C4 Nivel 1](02-vistas-c4/c4-nivel1.md)**
+ **[Ver diagrama C4 Nivel 1](02-vistas-c4/c4-nivel1.md)**
 
 **C4 Nivel 2 — Contenedores**
 
 Representa los principales contenedores del sistema: aplicación Android, API REST y base de datos MySQL.
 
-📱 **[Ver diagrama C4 Nivel 2](02-vistas-c4/c4-nivel2.md)**
+ **[Ver diagrama C4 Nivel 2](02-vistas-c4/c4-nivel2.md)**
 
-### 📁 5.3. Decisiones arquitectónicas (ADR)
+### 5.3. Decisiones arquitectónicas (ADR)
 
 Los ADR documentan las decisiones técnicas relevantes, su contexto y justificación.
 
@@ -133,13 +133,13 @@ Los ADR documentan las decisiones técnicas relevantes, su contexto y justificac
 
 Documenta la elección de MySQL como sistema de almacenamiento persistente.
 
-🗄️ **[Ver ADR-001](03-adr/ADR-001-persistencia-mysql.md)**
+ **[Ver ADR-001](03-adr/ADR-001-persistencia-mysql.md)**
 
 **ADR-002 — Autenticación y seguridad**
 
 Describe la decisión arquitectónica relacionada con la protección de credenciales y autenticación.
 
-🔐 **[Ver ADR-002](03-adr/ADR-002-autenticacion-hash-token.md)**
+ **[Ver ADR-002](03-adr/ADR-002-autenticacion-hash-token.md)**
 
 **ADR-003 — Arquitectura cliente-servidor**
 
@@ -147,17 +147,19 @@ Documenta la comunicación entre la aplicación Android y el backend mediante un
 
 🌐 **[Ver ADR-003](03-adr/ADR-003-cliente-servidor-api-rest.md)**
 
-### 📁 5.4. Registro de inteligencia artificial
+### 5.4. Registro de inteligencia artificial
 
 Documento que registra la utilización de herramientas de inteligencia artificial durante el desarrollo de la documentación arquitectónica.
-
-🤖 **[Ver registro de uso de IA](04-registro-ia.md)**
+ **[Ver registro de uso de IA](04-registro-ia.md)**
 
 ---
 
-## 📂 6. Estructura del repositorio
 
-\`\`\`text
+## 6. Estructura del repositorio
+
+La documentación del proyecto PUKAY se encuentra organizada de la siguiente manera:
+
+```text
 docs/
 │
 ├── README.md
@@ -174,11 +176,10 @@ docs/
 │   └── ADR-003-cliente-servidor-api-rest.md
 │
 └── 04-registro-ia.md
-\`\`\`
+```
 
----
 
-## 🔒 7. Seguridad y persistencia
+## 7. Seguridad y persistencia
 
 La arquitectura de PUKAY contempla mecanismos para el manejo de información y la protección de los datos.
 
@@ -192,7 +193,7 @@ Las decisiones y sus justificaciones se encuentran documentadas en los archivos 
 
 ---
 
-## 📐 8. Metodología de documentación
+## 8. Metodología de documentación
 
 La documentación arquitectónica se organiza utilizando:
 
@@ -214,7 +215,7 @@ Permiten mantener la documentación y los diagramas directamente en GitHub, faci
 
 ---
 
-## 📋 9. Resumen del dossier
+## 9. Resumen del dossier
 
 | Documento | Contenido |
 |---|---|
@@ -228,7 +229,7 @@ Permiten mantener la documentación y los diagramas directamente en GitHub, faci
 
 ---
 
-## 🏁 10. Conclusión
+## 10. Conclusión
 
 El dossier de arquitectura de PUKAY permite comprender la organización técnica del sistema, sus principales componentes y las decisiones arquitectónicas adoptadas.
 
@@ -236,7 +237,7 @@ La documentación mediante diagramas C4 y registros ADR facilita el análisis, m
 
 ---
 
-### 🏃 PUKAY
+### PUKAY
 **Dossier de Arquitectura de Software**
 
 *Documentación técnica del sistema de seguimiento deportivo.*
