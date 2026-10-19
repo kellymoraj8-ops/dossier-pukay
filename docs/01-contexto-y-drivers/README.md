@@ -96,8 +96,6 @@ La documentación utiliza como referencia:
 
 **[Volver al README principal del repositorio](https://github.com/kellymoraj8-ops/dossier-pukay/blob/main/README.md)**
 
-**[Consultar el índice general de documentación](https://github.com/kellymoraj8-ops/dossier-pukay/blob/main/docs/README.md)**
-
 **[Consultar las vistas C4](https://github.com/kellymoraj8-ops/dossier-pukay/blob/main/docs/02-vistas-c4/c4-nivel1.md)**
 
 **[Consultar los registros ADR](https://github.com/kellymoraj8-ops/dossier-pukay/tree/main/docs/03-adr)**
