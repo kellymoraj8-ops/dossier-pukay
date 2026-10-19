@@ -91,17 +91,18 @@ La documentación utiliza como referencia:
 
 ---
 
+
 ## Navegación
 
-**[Volver al README principal del repositorio](../../README.md)**
+**[Volver al README principal del repositorio](https://github.com/kellymoraj8-ops/dossier-pukay/blob/main/README.md)**
 
-**[Consultar el índice general de documentación](../README.md)**
+**[Consultar el índice general de documentación](https://github.com/kellymoraj8-ops/dossier-pukay/blob/main/docs/README.md)**
 
-**[Consultar las vistas C4](../02-vistas-c4/c4-nivel1.md)**
+**[Consultar las vistas C4](https://github.com/kellymoraj8-ops/dossier-pukay/blob/main/docs/02-vistas-c4/c4-nivel1.md)**
 
-**[Consultar los registros ADR](../03-adr/)**
+**[Consultar los registros ADR](https://github.com/kellymoraj8-ops/dossier-pukay/tree/main/docs/03-adr)**
 
-**[Consultar el registro del uso de IA](../04-registro-ia.md)**
+**[Consultar el registro del uso de IA](https://github.com/kellymoraj8-ops/dossier-pukay/blob/main/docs/04-registro-ia.md)**
 
 ---
 
