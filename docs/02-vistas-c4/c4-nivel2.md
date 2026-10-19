@@ -1,8 +1,25 @@
-flowchart TB
-  deportista["Deportista<br/>[Persona]"]
-  app["Aplicación móvil<br/>[Contenedor: Android,<br/>MVVM + Repository]"]
-  api["API REST<br/>[Contenedor: API REST sin estado,<br/>PHP sobre Apache XAMPP]"]
-  db[("Base de datos MySQL<br/>[Contenedor: MySQL]")]
-  deportista -->|"Usa las pantallas<br/>interfaz de la app"| app
-  app -->|"Solicita y recibe datos<br/>HTTPS/JSON con token"| api
-  api -->|"Lee y escribe datos<br/>SQL preparado (PDO)"| db
+
+```mermaid
+flowchart LR
+    D["👤 Deportista<br/>(Persona)"]
+    A["📱 Aplicación móvil PUKAY<br/>(Android · MVVM · Repository)"]
+    API["🌐 API REST<br/>(PHP · Apache/XAMPP)"]
+    DB[("🗄️ Base de datos<br/>MySQL")]
+
+    D -->|"Registra actividades<br/>Crea metas<br/>Consulta progreso"| A
+
+    A -->|"Solicitudes y respuestas<br/>JSON mediante HTTP(S)"| API
+
+    API -->|"Consultas SQL<br/>preparadas con PDO"| DB
+
+    classDef persona fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#0D47A1
+    classDef movil fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1B5E20
+    classDef servidor fill:#FFF3E0,stroke:#EF6C00,stroke-width:2px,color:#E65100
+    classDef datos fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px,color:#4A148C
+
+    class D persona
+    class A movil
+    class API servidor
+    class DB datos
+```
+  
