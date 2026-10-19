@@ -62,31 +62,31 @@ Diseñar y documentar una arquitectura de software organizada, mantenible y esca
 
 PUKAY utiliza una arquitectura cliente-servidor en la que la aplicación móvil se comunica con una API REST encargada de procesar las solicitudes y acceder a la base de datos MySQL.
 
+
 ### Diagrama de arquitectura
 
-\`\`\`mermaid
+```mermaid
 flowchart LR
     D["👤 Deportista<br/>(Usuario)"]
-    A["📱 Aplicación PUKAY<br/>(Android · MVVM · Repository)"]
-    API["🌐 API REST<br/>(PHP · Apache/XAMPP)"]
+    A["📱 Aplicación PUKAY<br/>(Android - MVVM - Repository)"]
+    API["🌐 API REST<br/>(PHP - Apache/XAMPP)"]
     DB[("🗄️ Base de datos<br/>MySQL")]
 
     D -->|"Registra actividades<br/>Crea metas<br/>Consulta progreso"| A
-
     A -->|"Solicitudes y respuestas<br/>HTTP(S) / JSON"| API
-
     API -->|"Consultas SQL<br/>preparadas con PDO"| DB
 
-    classDef persona fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#0D47A1
-    classDef movil fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1B5E20
-    classDef servidor fill:#FFF3E0,stroke:#EF6C00,stroke-width:2px,color:#E65100
-    classDef datos fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px,color:#4A148C
+    classDef persona fill:#E3F2FD,stroke:#1565C0,color:#0D47A1
+    classDef movil fill:#E8F5E9,stroke:#2E7D32,color:#1B5E20
+    classDef servidor fill:#FFF3E0,stroke:#EF6C00,color:#E65100
+    classDef datos fill:#F3E5F5,stroke:#7B1FA2,color:#4A148C
 
     class D persona
     class A movil
     class API servidor
     class DB datos
-\`\`\`
+```
+
 
 ### Funcionamiento general
 
