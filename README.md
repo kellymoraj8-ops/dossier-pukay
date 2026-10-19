@@ -46,13 +46,13 @@ Esta sección identifica las necesidades del sistema, los participantes involucr
 
 | Documento | Descripción |
 |---|---|
-| [Índice de la Parte I](01-contexto-y-drivers/README.md) | Presentación y organización de la primera parte del dossier. |
-| [El Caso PUKAY](01-contexto-y-drivers/a-caso-pukay.md) | Contexto, problemática y descripción general del sistema. |
-| [Convención de Identificadores](01-contexto-y-drivers/b-convencion-identificadores.md) | Identificadores utilizados para mantener la trazabilidad documental. |
-| [Stakeholders y Concerns](01-contexto-y-drivers/c-stakeholders-concerns.md) | Participantes e intereses relacionados con el sistema. |
-| [Restricciones y Supuestos](01-contexto-y-drivers/d-restricciones-supuestos.md) | Condiciones técnicas y organizacionales del proyecto. |
-| [Drivers Arquitectónicos](01-contexto-y-drivers/e-drivers-arquitectonicos.md) | Factores que orientan las decisiones de arquitectura. |
-| [Escenarios de Calidad](01-contexto-y-drivers/f-escenarios-calidad.md) | Escenarios que permiten evaluar los atributos de calidad. |
+| [Índice de la Parte I](./01-contexto-y-drivers/README.md) | Presentación y organización de la primera parte del dossier. |
+| [El Caso PUKAY](./01-contexto-y-drivers/a-caso-pukay.md) | Contexto, problemática y descripción general del sistema. |
+| [Convención de Identificadores](./01-contexto-y-drivers/b-convencion-identificadores.md) | Identificadores utilizados para mantener la trazabilidad documental. |
+| [Stakeholders y Concerns](./01-contexto-y-drivers/c-stakeholders-concerns.md) | Participantes e intereses relacionados con el sistema. |
+| [Restricciones y Supuestos](./01-contexto-y-drivers/d-restricciones-supuestos.md) | Condiciones técnicas y organizacionales del proyecto. |
+| [Drivers Arquitectónicos](./01-contexto-y-drivers/e-drivers-arquitectonicos.md) | Factores que orientan las decisiones de arquitectura. |
+| [Escenarios de Calidad](./01-contexto-y-drivers/f-escenarios-calidad.md) | Escenarios que permiten evaluar los atributos de calidad. |
 
 ---
 
@@ -62,8 +62,8 @@ Esta sección representa la arquitectura del sistema mediante diagramas que perm
 
 | Documento | Descripción |
 |---|---|
-| [C4 Nivel 1 — Contexto](02-vistas-c4/c4-nivel1.md) | Representa PUKAY y su relación con los usuarios y el entorno. |
-| [C4 Nivel 2 — Contenedores](02-vistas-c4/c4-nivel2.md) | Representa la aplicación Android, la API REST y la base de datos MySQL. |
+| [C4 Nivel 1 — Contexto](./02-vistas-c4/c4-nivel1.md) | Representa PUKAY y su relación con los usuarios y el entorno. |
+| [C4 Nivel 2 — Contenedores](./02-vistas-c4/c4-nivel2.md) | Representa la aplicación Android, la API REST y la base de datos MySQL. |
 
 Los diagramas permiten visualizar la separación de responsabilidades entre el cliente móvil, el servidor y el almacenamiento de información.
 
@@ -79,7 +79,7 @@ Se incluyen las siguientes decisiones:
 - **ADR-002:** Protección de credenciales y autenticación.
 - **ADR-003:** Arquitectura cliente-servidor mediante API REST.
 
-**[Consultar la carpeta de decisiones arquitectónicas](03-adr/)**
+**[Consultar la carpeta de decisiones arquitectónicas](./03-adr/)**
 
 ---
 
@@ -97,8 +97,8 @@ Se consideran tres alternativas:
 
 Documentos disponibles:
 
-- [Índice de Evaluación Arquitectónica](05-evaluacion-arquitectonica/README.md)
-- [Alternativas Arquitectónicas](05-evaluacion-arquitectonica/01-alternativas-arquitectonicas.md)
+- [Índice de Evaluación Arquitectónica](./05-evaluacion-arquitectonica/README.md)
+- [Alternativas Arquitectónicas](./05-evaluacion-arquitectonica/01-alternativas-arquitectonicas.md)
 
 **Estado:** En desarrollo. La evaluación ponderada y las actividades complementarias se mantienen pendientes, de acuerdo con el alcance actual del trabajo académico.
 
@@ -112,7 +112,7 @@ Las propuestas generadas por la IA fueron analizadas y contrastadas con el infor
 
 ### Documentación del Registro
 
-**[Consultar el Registro de Uso y Contraste de IA](04-registro-ia.md)**
+**[Consultar el Registro de Uso y Contraste de IA](./04-registro-ia.md)**
 
 El documento incluye:
 
