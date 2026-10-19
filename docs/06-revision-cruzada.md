@@ -19,7 +19,7 @@ Las observaciones recibidas serán analizadas por el equipo responsable para det
 |---|---|
 | **Tipo de revisión** | Revisión cruzada por pares académicos de la documentación de arquitectura de software. |
 | **Equipo revisor identificado** | Enrique Herrera, Rosa Baren y Daniel Mera. |
-| **Equipo responsable de la resolución** | [Incorporar nombres completos de los integrantes del equipo PUKAY]. |
+| **Equipo responsable de la resolución** | Kelly Mora, Katherin Siza, Oscar Arévalo. |
 | **Documentos principales** | Dossier de arquitectura de software de PUKAY; documentación de contexto y drivers; vistas arquitectónicas C4; registros de decisiones arquitectónicas (ADR). |
 | **Documentos de contraste** | Informe técnico original de PUKAY, requisitos funcionales y no funcionales, restricciones del proyecto y documentación de implementación. |
 | **Alcance del registro** | Identificación, análisis y tratamiento de las observaciones formuladas durante la revisión cruzada, incluyendo las decisiones adoptadas y sus evidencias. |
