@@ -99,7 +99,7 @@ flowchart LR
 
 ---
 
-## 📚 5. Documentación del repositorio
+## 5. Documentación del repositorio
 
 En esta sección se encuentran los enlaces a los documentos que conforman el dossier de arquitectura.
 
