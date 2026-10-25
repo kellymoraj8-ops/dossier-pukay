@@ -1,64 +1,174 @@
+
 # Matriz de Trazabilidad – PUKAY
 
 ## 1. Objetivo
 
-Relacionar los requisitos funcionales de PUKAY con las historias de usuario, criterios de aceptación, servicios de la API REST y pruebas de verificación, garantizando la trazabilidad de la cadena CASE.
+Relacionar los requisitos funcionales de PUKAY con las historias de usuario, criterios de aceptación, servicios de la API REST, escenarios Gherkin y resultados de verificación.
 
-## 2. Matriz de trazabilidad
+La matriz permite identificar las relaciones comprobadas y aquellas que todavía requieren validación, contribuyendo a la trazabilidad de la cadena CASE.
 
-| ID | Historia de usuario | Criterio de aceptación | Servicio o componente | Prueba asociada | Estado |
+## 2. Alcance
+
+La trazabilidad comprende:
+
+- Historias de usuario documentadas.
+- Criterios de aceptación en formato Gherkin.
+- Contrato OpenAPI de PUKAY.
+- Esqueleto ejecutable desarrollado en Node.js.
+- Escenarios automatizados mediante Cucumber.
+- Verificaciones realizadas con Spectral y ESLint.
+
+El esqueleto Node.js constituye un prototipo de apoyo para la actividad académica. No reemplaza la arquitectura principal de PUKAY, basada en Android, API REST PHP y MySQL.
+
+## 3. Matriz de trazabilidad funcional
+
+| ID de historia | Funcionalidad | Criterio de aceptación | Servicio relacionado | Escenario o archivo de prueba | Estado de trazabilidad |
 |---|---|---|---|---|---|
-| HU-001 | Registrar actividad deportiva | CA-01: Registro exitoso | POST /registrar_actividad.php | Registro con datos válidos | Pendiente de vincular evidencia individual |
-| HU-001 | Registrar actividad deportiva | CA-02: Rechazo de datos inválidos | POST /registrar_actividad.php | Duración y distancia negativas | Pendiente de vincular evidencia individual |
-| HU-001 | Registrar actividad deportiva | CA-03: Campos obligatorios | POST /registrar_actividad.php | Duración vacía | Pendiente de vincular evidencia individual |
-| HU-002 | Registro de usuario | Por verificar en archivo Gherkin | registro.php | hu1-registro.feature | Evidencia general de Cucumber disponible |
-| HU-003 | Inicio de sesión | Por verificar en archivo Gherkin | POST /login.php | hu2-inicio-sesion.feature | Evidencia general de Cucumber disponible |
-| HU-004 | Consulta de deportes | Por verificar en archivo Gherkin | Por confirmar | hu3-deportes.feature | Evidencia general de Cucumber disponible |
-| HU-005 | Consulta del historial | Por verificar en archivo Gherkin | GET /listar_actividades.php | hu5-historial.feature | Evidencia general de Cucumber disponible |
+| HU-001 | Registrar actividad deportiva | CA-01: Registro exitoso | POST /registrar_actividad.php | Escenario de registro con datos válidos; correspondencia exacta por verificar | Parcial |
+| HU-001 | Registrar actividad deportiva | CA-02: Rechazo de datos inválidos | POST /registrar_actividad.php | Escenario de duración o distancia inválida; correspondencia exacta por verificar | Parcial |
+| HU-001 | Registrar actividad deportiva | CA-03: Campos obligatorios | POST /registrar_actividad.php | Escenario de campos vacíos; correspondencia exacta por verificar | Parcial |
+| HU-002 (provisional) | Registro de usuario | Por verificar en la historia correspondiente | Servicio de registro; ruta por confirmar | `hu1-registro.feature` | Parcial |
+| HU-003 (provisional) | Inicio de sesión | Por verificar en la historia correspondiente | POST /login.php | `hu2-inicio-sesion.feature` | Parcial |
+| HU-004 (provisional) | Consulta de deportes | Por verificar en la historia correspondiente | Componente o servicio por confirmar | `hu3-deportes.feature` | Parcial |
+| HU-005 (provisional) | Consulta del historial | Por verificar en la historia correspondiente | GET /listar_actividades.php | `hu5-historial.feature` | Parcial |
+| Por confirmar | Actualización de actividad | Por verificar en el archivo Gherkin | POST /actualizar_actividad.php | `hu6-gestion-actividades-openapi.feature` | Parcial |
+| Por confirmar | Eliminación de actividad | Por verificar en el archivo Gherkin | POST /eliminar_actividad.php | `hu6-gestion-actividades-openapi.feature` | Parcial |
 
-**Nota:** Los identificadores HU-002 a HU-005 son provisionales. Los archivos Gherkin del esqueleto Node.js utilizan otra numeración. Debe unificarse antes de la entrega.
+**Nota 1:** Los identificadores HU-002 a HU-005 se conservan provisionalmente porque la numeración documental todavía debe contrastarse con los archivos Gherkin.
 
-## 3. Herramientas de verificación
+**Nota 2:** La relación entre un servicio PHP y un escenario del prototipo Node.js representa una correspondencia funcional prevista. No demuestra que el escenario haya ejecutado una solicitud HTTP contra el backend PHP.
 
-| Herramienta | Propósito | Evidencia |
+**Nota 3:** La presencia de un archivo `.feature` no garantiza que todos los criterios de aceptación estén cubiertos. La cobertura debe comprobarse revisando sus escenarios y definiciones de pasos.
+
+## 4. Contrato OpenAPI y operaciones documentadas
+
+El archivo `api/openapi.yaml` contiene cinco operaciones que fueron visualizadas mediante Swagger Editor.
+
+| ID | Operación | Finalidad |
 |---|---|---|
-| Swagger / OpenAPI | Documentar el contrato de la API REST | api/openapi.yaml |
-| Spectral | Analizar la calidad del contrato OpenAPI | evidencias/validacion-spectral-openapi.png |
-| Redocly | Generar documentación HTML de la API | Archivo HTML generado localmente |
-| Cucumber | Ejecutar escenarios Gherkin sobre el esqueleto Node.js | evidencias/cucumbertest.txt |
-| ESLint | Realizar análisis estático del código JavaScript | evidencias/eslint.txt |
+| API-01 | POST /login.php | Autenticación de usuario |
+| API-02 | POST /registrar_actividad.php | Registro de actividad deportiva |
+| API-03 | GET /listar_actividades.php | Consulta de actividades |
+| API-04 | POST /actualizar_actividad.php | Actualización de actividad |
+| API-05 | POST /eliminar_actividad.php | Eliminación de actividad |
 
-## 4. Resultados registrados
+Estas operaciones constituyen referencias del contrato OpenAPI. Su presencia en el contrato no equivale a una prueba de integración satisfactoria contra el servidor PHP/MySQL.
 
-### Validación OpenAPI
+## 5. Herramientas de verificación
 
-Se ejecutó Spectral sobre el contrato OpenAPI de PUKAY. La comprobación con severidad de error no encontró errores.
+| Herramienta | Propósito | Artefacto o evidencia |
+|---|---|---|
+| Swagger Editor | Visualizar y revisar las operaciones del contrato OpenAPI | `api/openapi.yaml` |
+| Spectral | Validar el contrato OpenAPI mediante reglas | `api/openapi.yaml` y `.spectral.yaml` |
+| Redocly | Generar documentación HTML de la API | Documento HTML generado localmente; ubicación final por confirmar |
+| Cucumber | Ejecutar escenarios Gherkin del prototipo Node.js | `tests/features/` y `tests/steps/` |
+| ESLint | Analizar estáticamente el código JavaScript | Código del prototipo y resultado del comando de lint |
 
-### Pruebas automatizadas Cucumber
+Los archivos de evidencia mencionados en versiones anteriores deben comprobarse en el repositorio antes de presentarlos como adjuntos disponibles.
 
-Según la evidencia proporcionada por el equipo:
+## 6. Resultados de verificación
 
-- Escenarios ejecutados: 12.
-- Escenarios aprobados: 12.
-- Pasos ejecutados: 68.
-- Pasos aprobados: 68.
+### 6.1. Validación OpenAPI
 
-Estos resultados corresponden al esqueleto ejecutable Node.js utilizado por el equipo. No constituyen, por sí solos, evidencia de pruebas contra el backend PHP/MySQL ni contra la aplicación Android.
+Se ejecutó Spectral sobre el contrato OpenAPI de PUKAY.
 
-### Análisis estático ESLint
+**Comando utilizado:**
 
-Se ejecutó el comando `npm run lint` sobre el proyecto JavaScript. La evidencia compartida muestra su ejecución sin errores visibles.
+`npx.cmd @stoplight/spectral-cli lint api/openapi.yaml`
 
-## 5. Pendientes de verificación
+Durante la primera ejecución se presentó un problema debido a la ausencia de un conjunto de reglas.
 
-- Confirmar la correspondencia entre los identificadores de historias de usuario y los archivos Gherkin.
-- Revisar los escenarios exactos incluidos en cada archivo `.feature`.
-- Vincular cada criterio de aceptación con su escenario automatizado.
-- Confirmar las diferencias entre las rutas del esqueleto Node.js y los endpoints PHP.
-- Incorporar las evidencias pendientes de las pruebas de integración y ejecución.
+Para resolverlo, se configuró el archivo `.spectral.yaml` con el siguiente contenido:
 
-## 6. Conclusión
+`extends: ["spectral:oas"]`
 
-La matriz permite identificar la relación entre requisitos, implementación y pruebas. Las evidencias disponibles muestran avances en documentación de API, validación del contrato, análisis estático y pruebas automatizadas del esqueleto Node.js.
+Después de repetir la validación, se obtuvo el mensaje:
 
-La trazabilidad completa quedará establecida cuando se verifiquen los escenarios individuales y se vinculen sus resultados con los criterios de aceptación correspondientes.
+`No results with a severity of 'error' found!`
+
+**Resultado:** no se encontraron problemas de severidad `error`.
+
+Este resultado no implica necesariamente la ausencia de advertencias ni confirma el funcionamiento del backend.
+
+### 6.2. Pruebas automatizadas Cucumber
+
+Se ejecutaron pruebas automatizadas mediante Cucumber sobre el prototipo Node.js.
+
+**Comando utilizado:**
+
+`npm.cmd test`
+
+**Resultado de la ejecución más reciente comunicada:**
+
+- Escenarios ejecutados: 16.
+- Escenarios aprobados: 16.
+- Escenarios fallidos: 0.
+
+El registro anterior documentaba 12 escenarios y 68 pasos aprobados. Posteriormente se amplió la suite a 16 escenarios.
+
+Por este motivo, el número de 68 pasos no se presenta como resultado actualizado: debe confirmarse mediante la salida de la última ejecución.
+
+Los escenarios de actualización y eliminación incorporados al prototipo verifican funciones de servicio. No constituyen, por sí mismos, pruebas de integración HTTP contra el backend PHP/MySQL.
+
+### 6.3. Análisis estático ESLint
+
+Se ejecutó el análisis estático del código JavaScript.
+
+**Comando utilizado:**
+
+`npm.cmd run lint`
+
+**Resultado:** ejecución finalizada sin errores reportados.
+
+Esta comprobación corresponde al código JavaScript del prototipo y no representa un análisis estático del código Java o PHP de PUKAY.
+
+## 7. Relación con los artefactos de la cadena CASE
+
+| Artefacto | Función dentro de la trazabilidad |
+|---|---|
+| `docs/06-mapa-toolchain.md` | Identificar fases, tareas prioritarias y herramientas CASE |
+| `docs/07-historias-y-criterios.md` | Documentar historias de usuario y criterios de aceptación |
+| `docs/08-matriz-trazabilidad.md` | Relacionar requisitos, servicios y pruebas |
+| `docs/09-matriz-evaluacion-case.md` | Evaluar y seleccionar herramientas CASE |
+| `docs/04-registro-ia.md` | Documentar uso, defectos y verificación de resultados de IA |
+| `api/openapi.yaml` | Especificar las operaciones del contrato REST |
+| `.spectral.yaml` | Configurar la validación del contrato |
+| `src/` | Contener la implementación del prototipo Node.js |
+| `tests/features/` | Contener escenarios de aceptación en Gherkin |
+| `tests/steps/` | Contener las definiciones de pasos de Cucumber |
+
+## 8. Pendientes de verificación
+
+Para completar la trazabilidad se requiere:
+
+1. Unificar los identificadores de historias de usuario entre la documentación y los archivos Gherkin.
+2. Revisar el contenido exacto de cada archivo `.feature`.
+3. Asociar cada criterio de aceptación con uno o varios escenarios identificables.
+4. Confirmar las diferencias entre las rutas del prototipo Node.js y los endpoints PHP.
+5. Registrar la salida actualizada de Cucumber, incluyendo el número de pasos.
+6. Confirmar la existencia y ubicación de las evidencias finales.
+7. Realizar pruebas de integración HTTP y del backend PHP/MySQL cuando corresponda al alcance de la implementación.
+
+## 9. Conclusión
+
+La matriz de trazabilidad permite relacionar los requisitos funcionales de PUKAY con el contrato OpenAPI y las pruebas del prototipo Node.js.
+
+Las verificaciones realizadas muestran resultados satisfactorios en el alcance evaluado: cinco operaciones visualizadas en Swagger Editor, validación de Spectral sin errores de severidad `error`, 16 escenarios aprobados en Cucumber y análisis ESLint sin errores.
+
+No obstante, todavía existen relaciones que deben confirmarse mediante la revisión de los archivos Gherkin y sus definiciones de pasos.
+
+Por ello, la trazabilidad se considera parcialmente verificada. Esta distinción permite evitar afirmaciones no respaldadas por evidencias y facilita el cierre de los artefactos de la Semana 2.
+
+---
+
+## Navegación
+
+[Volver al índice general](README.md)
+
+[Consultar el mapa de toolchain](06-mapa-toolchain.md)
+
+[Consultar historias y criterios de aceptación](07-historias-y-criterios.md)
+
+[Consultar la matriz de evaluación CASE](09-matriz-evaluacion-case.md)
+
+[Consultar el registro de IA](04-registro-ia.md)
