@@ -134,24 +134,53 @@ ChatGPT se considera la herramienta de IA requerida por la actividad.
 
 ## 6. Plan de pruebas de herramientas CASE
 
-### 6.1 Prueba P-01: ChatGPT
+### 6.1. Prueba P-01: ChatGPT
 
-**Tarea asociada:** T-01.
+**Tarea asociada:** T-01 — Elaborar y actualizar historias de usuario y criterios de aceptación.
 
-**Objetivo:** Evaluar el apoyo de IA para generar historias de usuario y criterios de aceptación en formato Gherkin.
+**Herramienta:** ChatGPT (GPT-6).
 
-**Procedimiento propuesto:**
+**Objetivo:** Evaluar el uso de inteligencia artificial como apoyo para generar historias de usuario y criterios de aceptación en formato Gherkin, utilizando como referencia el proyecto PUKAY.
 
-1. Seleccionar un escenario funcional de PUKAY.
-2. Solicitar la elaboración de una historia de usuario.
-3. Generar criterios de aceptación en Gherkin.
-4. Comparar los resultados con los requisitos documentados.
-5. Registrar errores, correcciones y decisiones.
+**Prompt utilizado:**
 
-**Resultado:** Pendiente de verificación práctica.
+> Genera una historia de usuario para PUKAY, una aplicación Android de seguimiento deportivo, sobre el registro de actividades. Incluye criterios de aceptación en formato Gherkin para un registro exitoso y para el rechazo de datos inválidos.
 
-**Evidencia:** Pendiente.
+**Procedimiento realizado:**
 
+1. Se seleccionó la funcionalidad de registro de actividades deportivas de PUKAY.
+2. Se solicitó a ChatGPT generar una historia de usuario y criterios de aceptación.
+3. Se revisó la propuesta generada.
+4. Se desarrolló la historia HU-001 incorporando tres criterios de aceptación.
+5. Se documentó la historia en `docs/07-historias-y-criterios.md`.
+
+**Resultado obtenido:**
+
+Se elaboró la historia HU-001: Registro de Actividades Deportivas, con los siguientes criterios:
+
+- CA-01: Registro exitoso de una actividad.
+- CA-02: Rechazo de datos inválidos.
+- CA-03: Validación de campos obligatorios.
+
+**Defectos identificados:**
+
+La propuesta inicial no contemplaba todos los campos de la actividad deportiva ni la validación de campos obligatorios como un escenario independiente. Además, no especificaba completamente la relación entre el usuario autenticado, la API REST y la persistencia en MySQL.
+
+**Decisión:** Modificado.
+
+Se amplió la historia para incluir los campos utilizados en PUKAY, un tercer criterio de aceptación y seis reglas de negocio propuestas.
+
+**Verificación realizada:**
+
+Se revisó la estructura documental de HU-001 y sus criterios Gherkin. La verificación funcional contra el código de PUKAY y las pruebas automatizadas continúa pendiente.
+
+**Evidencia:**
+
+- Historia HU-001 documentada en `docs/07-historias-y-criterios.md`.
+- Criterios de aceptación CA-01, CA-02 y CA-03.
+- Registro de las modificaciones realizadas sobre la propuesta inicial.
+
+**Estado:** Prueba documental realizada; validación funcional pendiente.
 ### 6.2 Prueba P-02: Swagger Editor
 
 **Tarea asociada:** T-02.
