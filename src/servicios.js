@@ -1,19 +1,21 @@
 
 "use strict";
 
-// Servicios del prototipo Node.js de PUKAY.
-// Conserva las funciones originales para Cucumber
-// y agrega adaptadores compatibles con OpenAPI.
-
 const {
   generarHash,
   verificarPassword,
   generarToken,
 } = require("./seguridad");
 
+// ========================================
+// RESPUESTAS DE ERROR
+// ========================================
+
 const error = (estado, mensaje) => ({
   estado,
-  cuerpo: { mensaje },
+  cuerpo: {
+    mensaje,
+  },
 });
 
 const errorOpenAPI = (estado, mensaje) => ({
@@ -24,28 +26,39 @@ const errorOpenAPI = (estado, mensaje) => ({
   },
 });
 
-const aPublica = (a) => ({
-  id: a.id,
-  deporte: a.deporte,
-  fecha: a.fecha,
-  duracion: a.duracion,
-  distancia: a.distancia,
-  comentario: a.comentario,
+const textoVacio = (valor) =>
+  typeof valor !== "string" || valor.trim() === "";
+
+const aPublica = (actividad) => ({
+  id: actividad.id,
+  deporte: actividad.deporte,
+  fecha: actividad.fecha,
+  duracion: actividad.duracion,
+  distancia: actividad.distancia,
+  comentario: actividad.comentario,
 });
 
-const textoVacio = (v) =>
-  typeof v !== "string" || v.trim() === "";
-
-// ----------------------------------------------------
-// REGISTRO DE USUARIOS
-// ----------------------------------------------------
+// ========================================
+// REGISTRAR USUARIO
+// ========================================
 
 function registrarUsuario(almacen, cuerpo) {
-  if (textoVacio(cuerpo.correo) || textoVacio(cuerpo.password)) {
-    return error(400, "Correo y contraseña son obligatorios");
+  if (
+    !cuerpo ||
+    textoVacio(cuerpo.correo) ||
+    textoVacio(cuerpo.password)
+  ) {
+    return error(
+      400,
+      "Correo y contraseña son obligatorios"
+    );
   }
 
-  if (almacen.usuarios.some((u) => u.correo === cuerpo.correo)) {
+  const existe = almacen.usuarios.some(
+    (usuario) => usuario.correo === cuerpo.correo
+  );
+
+  if (existe) {
     return error(409, "El correo ya está registrado");
   }
 
@@ -69,13 +82,20 @@ function registrarUsuario(almacen, cuerpo) {
   };
 }
 
-// ----------------------------------------------------
-// INICIO DE SESIÓN
-// ----------------------------------------------------
+// ========================================
+// INICIAR SESIÓN
+// ========================================
 
 function iniciarSesion(almacen, cuerpo) {
-  if (textoVacio(cuerpo.correo) || textoVacio(cuerpo.password)) {
-    return error(400, "Correo y contraseña son obligatorios");
+  if (
+    !cuerpo ||
+    textoVacio(cuerpo.correo) ||
+    textoVacio(cuerpo.password)
+  ) {
+    return error(
+      400,
+      "Correo y contraseña son obligatorios"
+    );
   }
 
   const usuario = almacen.usuarios.find(
@@ -95,7 +115,7 @@ function iniciarSesion(almacen, cuerpo) {
 
   const token = generarToken();
 
-  // Vigencia del token: 24 horas.
+  // Token válido durante 24 horas.
   const expiraEn = Date.now() + 24 * 60 * 60 * 1000;
 
   almacen.sesiones.set(token, {
@@ -105,13 +125,15 @@ function iniciarSesion(almacen, cuerpo) {
 
   return {
     estado: 200,
-    cuerpo: { token },
+    cuerpo: {
+      token,
+    },
   };
 }
 
-// ----------------------------------------------------
-// CATÁLOGO DE DEPORTES
-// ----------------------------------------------------
+// ========================================
+// LISTAR DEPORTES
+// ========================================
 
 function listarDeportes(almacen) {
   return {
@@ -120,12 +142,18 @@ function listarDeportes(almacen) {
   };
 }
 
-// ----------------------------------------------------
-// REGISTRO ORIGINAL DE ACTIVIDADES
-// ----------------------------------------------------
+// ========================================
+// REGISTRAR ACTIVIDAD ORIGINAL
+// ========================================
 
 function registrarActividad(almacen, usuarioId, cuerpo) {
-  const deportes = almacen.deportes.map((d) => d.nombre);
+  if (!cuerpo) {
+    return error(400, "Datos inválidos");
+  }
+
+  const deportes = almacen.deportes.map(
+    (deporte) => deporte.nombre
+  );
 
   if (!deportes.includes(cuerpo.deporte)) {
     return error(400, "Deporte no válido");
@@ -135,14 +163,20 @@ function registrarActividad(almacen, usuarioId, cuerpo) {
     textoVacio(cuerpo.fecha) ||
     !/^\d{4}-\d{2}-\d{2}$/.test(cuerpo.fecha)
   ) {
-    return error(400, "La fecha es obligatoria (AAAA-MM-DD)");
+    return error(
+      400,
+      "La fecha es obligatoria (AAAA-MM-DD)"
+    );
   }
 
   if (
     !Number.isInteger(cuerpo.duracion) ||
     cuerpo.duracion < 1
   ) {
-    return error(400, "La duración en minutos es obligatoria");
+    return error(
+      400,
+      "La duración en minutos es obligatoria"
+    );
   }
 
   if (
@@ -177,24 +211,26 @@ function registrarActividad(almacen, usuarioId, cuerpo) {
   };
 }
 
-// ----------------------------------------------------
-// HISTORIAL ORIGINAL DE ACTIVIDADES
-// ----------------------------------------------------
+// ========================================
+// LISTAR ACTIVIDADES ORIGINAL
+// ========================================
 
 function listarActividades(almacen, usuarioId) {
-  const propias = almacen.actividades
-    .filter((a) => a.usuarioId === usuarioId)
+  const actividades = almacen.actividades
+    .filter(
+      (actividad) => actividad.usuarioId === usuarioId
+    )
     .map(aPublica);
 
   return {
     estado: 200,
-    cuerpo: propias,
+    cuerpo: actividades,
   };
 }
 
-// ----------------------------------------------------
-// ADAPTADORES OPENAPI
-// ----------------------------------------------------
+// ========================================
+// EQUIVALENCIAS DE DEPORTES OPENAPI
+// ========================================
 
 const equivalenciasDeportes = {
   Running: "running",
@@ -205,34 +241,46 @@ const equivalenciasDeportes = {
   "Natación": "natación",
 };
 
-// Validaciones compartidas entre registro y actualización.
+// ========================================
+// VALIDACIÓN DE ACTIVIDADES OPENAPI
+// ========================================
+
 function validarActividadOpenAPI(cuerpo) {
   if (
     !cuerpo ||
     typeof cuerpo !== "object" ||
     Array.isArray(cuerpo)
   ) {
-    return { error: "Datos inválidos" };
+    return {
+      error: "Datos inválidos",
+    };
   }
 
-  const deporteInterno = equivalenciasDeportes[cuerpo.deporte];
+  const deporteInterno =
+    equivalenciasDeportes[cuerpo.deporte];
 
   if (!deporteInterno) {
-    return { error: "Deporte no válido" };
+    return {
+      error: "Deporte no válido",
+    };
   }
 
   if (
     typeof cuerpo.fecha !== "string" ||
     !/^\d{4}-\d{2}-\d{2}$/.test(cuerpo.fecha)
   ) {
-    return { error: "Fecha inválida" };
+    return {
+      error: "Fecha inválida",
+    };
   }
 
   const [anio, mes, dia] = cuerpo.fecha
     .split("-")
     .map(Number);
 
-  const fecha = new Date(Date.UTC(anio, mes - 1, dia));
+  const fecha = new Date(
+    Date.UTC(anio, mes - 1, dia)
+  );
 
   if (
     fecha.getUTCFullYear() !== anio ||
@@ -240,7 +288,9 @@ function validarActividadOpenAPI(cuerpo) {
     fecha.getUTCDate() !== dia ||
     fecha.getTime() > Date.now()
   ) {
-    return { error: "Fecha inválida o futura" };
+    return {
+      error: "Fecha inválida o futura",
+    };
   }
 
   if (
@@ -252,9 +302,10 @@ function validarActividadOpenAPI(cuerpo) {
     };
   }
 
-  const distancia = cuerpo.distancia === undefined
-    ? 0
-    : cuerpo.distancia;
+  const distancia =
+    cuerpo.distancia === undefined
+      ? 0
+      : cuerpo.distancia;
 
   if (
     typeof distancia !== "number" ||
@@ -270,7 +321,9 @@ function validarActividadOpenAPI(cuerpo) {
     cuerpo.observacion !== undefined &&
     typeof cuerpo.observacion !== "string"
   ) {
-    return { error: "Observación inválida" };
+    return {
+      error: "Observación inválida",
+    };
   }
 
   return {
@@ -284,9 +337,9 @@ function validarActividadOpenAPI(cuerpo) {
   };
 }
 
-// ----------------------------------------------------
+// ========================================
 // LOGIN OPENAPI
-// ----------------------------------------------------
+// ========================================
 
 function iniciarSesionOpenAPI(almacen, cuerpo) {
   if (
@@ -324,26 +377,31 @@ function iniciarSesionOpenAPI(almacen, cuerpo) {
       token: resultado.cuerpo.token,
       usuario: {
         id: usuario.id,
-        nombre: usuario.nombre || "Deportista PUKAY",
+        nombre:
+          usuario.nombre || "Deportista PUKAY",
         correo: usuario.correo,
       },
     },
   };
 }
 
-// ----------------------------------------------------
+// ========================================
 // REGISTRAR ACTIVIDAD OPENAPI
-// ----------------------------------------------------
+// ========================================
 
 function registrarActividadOpenAPI(
   almacen,
   usuarioId,
   cuerpo
 ) {
-  const validacion = validarActividadOpenAPI(cuerpo);
+  const validacion =
+    validarActividadOpenAPI(cuerpo);
 
   if (validacion.error) {
-    return errorOpenAPI(400, validacion.error);
+    return errorOpenAPI(
+      400,
+      validacion.error
+    );
   }
 
   const resultado = registrarActividad(
@@ -363,50 +421,69 @@ function registrarActividadOpenAPI(
     estado: 201,
     cuerpo: {
       estado: "ok",
-      mensaje: "Actividad registrada correctamente",
+      mensaje:
+        "Actividad registrada correctamente",
       id_actividad: resultado.cuerpo.id,
     },
   };
 }
 
-// ----------------------------------------------------
+// ========================================
 // LISTAR ACTIVIDADES OPENAPI
-// ----------------------------------------------------
+// ========================================
 
-function listarActividadesOpenAPI(almacen, usuarioId) {
-  const equivalenciasInversas = Object.fromEntries(
-    Object.entries(equivalenciasDeportes).map(
-      ([oficial, interno]) => [interno, oficial]
-    )
-  );
+function listarActividadesOpenAPI(
+  almacen,
+  usuarioId
+) {
+  const equivalenciasInversas =
+    Object.fromEntries(
+      Object.entries(
+        equivalenciasDeportes
+      ).map(([oficial, interno]) => [
+        interno,
+        oficial,
+      ])
+    );
 
   const actividades = almacen.actividades
-    .filter((a) => a.usuarioId === usuarioId)
-    .sort((a, b) =>
-      b.fecha.localeCompare(a.fecha) || b.id - a.id
+    .filter(
+      (actividad) =>
+        actividad.usuarioId === usuarioId
     )
-    .map((a) => ({
-      id: a.id,
-      deporte: equivalenciasInversas[a.deporte] || a.deporte,
-      fecha: a.fecha,
-      duracion: a.duracion,
-      distancia: a.distancia ?? 0,
-      observacion: a.comentario ?? "",
+    .sort(
+      (a, b) =>
+        b.fecha.localeCompare(a.fecha) ||
+        b.id - a.id
+    )
+    .map((actividad) => ({
+      id: actividad.id,
+      deporte:
+        equivalenciasInversas[
+          actividad.deporte
+        ] || actividad.deporte,
+      fecha: actividad.fecha,
+      duracion: actividad.duracion,
+      distancia:
+        actividad.distancia ?? 0,
+      observacion:
+        actividad.comentario ?? "",
     }));
 
   return {
     estado: 200,
     cuerpo: {
       estado: "ok",
-      mensaje: "Actividades obtenidas correctamente",
+      mensaje:
+        "Actividades obtenidas correctamente",
       actividades,
     },
   };
 }
 
-// ----------------------------------------------------
+// ========================================
 // ACTUALIZAR ACTIVIDAD OPENAPI
-// ----------------------------------------------------
+// ========================================
 
 function actualizarActividadOpenAPI(
   almacen,
@@ -415,7 +492,9 @@ function actualizarActividadOpenAPI(
 ) {
   if (
     !cuerpo ||
-    !Number.isInteger(cuerpo.id_actividad) ||
+    !Number.isInteger(
+      cuerpo.id_actividad
+    ) ||
     cuerpo.id_actividad < 1
   ) {
     return errorOpenAPI(
@@ -424,12 +503,13 @@ function actualizarActividadOpenAPI(
     );
   }
 
-  // Solo buscar actividades del usuario autenticado.
-  const actividad = almacen.actividades.find(
-    (a) =>
-      a.id === cuerpo.id_actividad &&
-      a.usuarioId === usuarioId
-  );
+  // Solo se puede actualizar una actividad propia.
+  const actividad =
+    almacen.actividades.find(
+      (a) =>
+        a.id === cuerpo.id_actividad &&
+        a.usuarioId === usuarioId
+    );
 
   if (!actividad) {
     return errorOpenAPI(
@@ -438,40 +518,55 @@ function actualizarActividadOpenAPI(
     );
   }
 
-  const validacion = validarActividadOpenAPI(cuerpo);
+  const validacion =
+    validarActividadOpenAPI(cuerpo);
 
   if (validacion.error) {
-    return errorOpenAPI(400, validacion.error);
+    return errorOpenAPI(
+      400,
+      validacion.error
+    );
   }
 
-  actividad.deporte = validacion.datos.deporte;
-  actividad.fecha = validacion.datos.fecha;
-  actividad.duracion = validacion.datos.duracion;
-  actividad.distancia = validacion.datos.distancia;
-  actividad.comentario = validacion.datos.comentario;
+  actividad.deporte =
+    validacion.datos.deporte;
+
+  actividad.fecha =
+    validacion.datos.fecha;
+
+  actividad.duracion =
+    validacion.datos.duracion;
+
+  actividad.distancia =
+    validacion.datos.distancia;
+
+  actividad.comentario =
+    validacion.datos.comentario;
 
   return {
     estado: 200,
     cuerpo: {
       estado: "ok",
-      mensaje: "Actividad actualizada correctamente",
+      mensaje:
+        "Actividad actualizada correctamente",
     },
   };
 }
 
-// ----------------------------------------------------
+// ========================================
 // ELIMINAR ACTIVIDAD OPENAPI
-// ----------------------------------------------------
+// ========================================
 
 function eliminarActividadOpenAPI(
   almacen,
   usuarioId,
   cuerpo
 ) {
-  // El identificador debe ser un entero positivo.
   if (
     !cuerpo ||
-    !Number.isInteger(cuerpo.id_actividad) ||
+    !Number.isInteger(
+      cuerpo.id_actividad
+    ) ||
     cuerpo.id_actividad < 1
   ) {
     return errorOpenAPI(
@@ -480,12 +575,15 @@ function eliminarActividadOpenAPI(
     );
   }
 
-  // Buscar una actividad que pertenezca al usuario.
-  const indice = almacen.actividades.findIndex(
-    (a) =>
-      a.id === cuerpo.id_actividad &&
-      a.usuarioId === usuarioId
-  );
+  // Buscar solo una actividad del usuario autenticado.
+  const indice =
+    almacen.actividades.findIndex(
+      (actividad) =>
+        actividad.id ===
+          cuerpo.id_actividad &&
+        actividad.usuarioId ===
+          usuarioId
+    );
 
   if (indice === -1) {
     return errorOpenAPI(
@@ -494,21 +592,25 @@ function eliminarActividadOpenAPI(
     );
   }
 
-  // Eliminar la actividad.
-  almacen.actividades.splice(indice, 1);
+  // Eliminar la actividad del almacén.
+  almacen.actividades.splice(
+    indice,
+    1
+  );
 
   return {
     estado: 200,
     cuerpo: {
       estado: "ok",
-      mensaje: "Actividad eliminada correctamente",
+      mensaje:
+        "Actividad eliminada correctamente",
     },
   };
 }
 
-// ----------------------------------------------------
-// EXPORTACIONES
-// ----------------------------------------------------
+// ========================================
+// EXPORTAR TODAS LAS FUNCIONES
+// ========================================
 
 module.exports = {
   registrarUsuario,
