@@ -9,6 +9,7 @@ const http = require("http");
 const { crearAlmacen } = require("./almacen");
 const servicios = require("./servicios");
 
+// Leer el cuerpo JSON de una solicitud HTTP.
 function leerJson(req) {
   return new Promise((resolve) => {
     let datos = "";
@@ -27,7 +28,7 @@ function leerJson(req) {
   });
 }
 
-// Verifica que el token exista y no esté vencido.
+// Verificar que el token exista y no haya expirado.
 function usuarioDelToken(almacen, req) {
   const cabecera = req.headers.authorization || "";
   const [esquema, token] = cabecera.split(" ");
@@ -42,7 +43,7 @@ function usuarioDelToken(almacen, req) {
     return null;
   }
 
-  // Rechazar y eliminar sesiones vencidas.
+  // Eliminar las sesiones vencidas.
   if (Date.now() >= sesion.expiraEn) {
     almacen.sesiones.delete(token);
     return null;
@@ -51,8 +52,10 @@ function usuarioDelToken(almacen, req) {
   return sesion.usuarioId;
 }
 
+// Crear el servidor HTTP de PUKAY.
 function crearServidor(almacen = crearAlmacen()) {
   const servidor = http.createServer(async (req, res) => {
+    // Enviar respuestas en formato JSON.
     const responder = ({ estado, cuerpo }) => {
       res.writeHead(estado, {
         "Content-Type": "application/json; charset=utf-8",
@@ -64,7 +67,10 @@ function crearServidor(almacen = crearAlmacen()) {
     const ruta = req.url.split("?")[0];
     const clave = `${req.method} ${ruta}`;
 
-    // Rutas que no requieren autenticación.
+    // --------------------------------------------
+    // RUTAS PÚBLICAS
+    // --------------------------------------------
+
     const rutasPublicas = {
       "POST /api/auth/registro": (c) =>
         servicios.registrarUsuario(almacen, c),
@@ -76,7 +82,10 @@ function crearServidor(almacen = crearAlmacen()) {
         servicios.iniciarSesionOpenAPI(almacen, c),
     };
 
-    // Rutas que requieren un token válido.
+    // --------------------------------------------
+    // RUTAS PROTEGIDAS
+    // --------------------------------------------
+
     const rutasProtegidas = {
       "GET /api/deportes": () =>
         servicios.listarDeportes(almacen),
@@ -92,7 +101,19 @@ function crearServidor(almacen = crearAlmacen()) {
 
       "GET /listar_actividades.php": (_c, uid) =>
         servicios.listarActividadesOpenAPI(almacen, uid),
+
+      // Nueva ruta: actualizar actividad deportiva.
+      "POST /actualizar_actividad.php": (c, uid) =>
+        servicios.actualizarActividadOpenAPI(
+          almacen,
+          uid,
+          c
+        ),
     };
+
+    // --------------------------------------------
+    // IDENTIFICAR RUTAS DEL CONTRATO OPENAPI
+    // --------------------------------------------
 
     const esRutaOpenAPI = [
       "/login.php",
@@ -102,27 +123,48 @@ function crearServidor(almacen = crearAlmacen()) {
       "/eliminar_actividad.php",
     ].includes(ruta);
 
-    // Respuestas de error compatibles con cada interfaz.
+    // Formato de errores según la interfaz.
     const responderError = (estado, mensaje) =>
       responder({
         estado,
         cuerpo: esRutaOpenAPI
-          ? { estado: "error", mensaje }
-          : { mensaje },
+          ? {
+              estado: "error",
+              mensaje,
+            }
+          : {
+              mensaje,
+            },
       });
+
+    // --------------------------------------------
+    // PROCESAR RUTAS PÚBLICAS
+    // --------------------------------------------
 
     if (rutasPublicas[clave]) {
       const cuerpo = await leerJson(req);
 
       if (cuerpo === null) {
-        return responderError(400, "JSON inválido");
+        return responderError(
+          400,
+          "JSON inválido"
+        );
       }
 
-      return responder(rutasPublicas[clave](cuerpo));
+      return responder(
+        rutasPublicas[clave](cuerpo)
+      );
     }
 
+    // --------------------------------------------
+    // PROCESAR RUTAS PROTEGIDAS
+    // --------------------------------------------
+
     if (rutasProtegidas[clave]) {
-      const usuarioId = usuarioDelToken(almacen, req);
+      const usuarioId = usuarioDelToken(
+        almacen,
+        req
+      );
 
       if (usuarioId === null) {
         return responderError(
@@ -134,17 +176,31 @@ function crearServidor(almacen = crearAlmacen()) {
       const cuerpo = await leerJson(req);
 
       if (cuerpo === null) {
-        return responderError(400, "JSON inválido");
+        return responderError(
+          400,
+          "JSON inválido"
+        );
       }
 
       return responder(
-        rutasProtegidas[clave](cuerpo, usuarioId)
+        rutasProtegidas[clave](
+          cuerpo,
+          usuarioId
+        )
       );
     }
 
-    return responderError(404, "Recurso inexistente");
+    // --------------------------------------------
+    // RUTA NO ENCONTRADA
+    // --------------------------------------------
+
+    return responderError(
+      404,
+      "Recurso inexistente"
+    );
   });
 
+  // Permite a Cucumber consultar el almacén.
   servidor.almacen = almacen;
 
   return servidor;
