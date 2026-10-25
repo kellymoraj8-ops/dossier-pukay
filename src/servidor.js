@@ -3,13 +3,13 @@
 
 // Servidor HTTP del prototipo Node.js de PUKAY.
 // Conserva las rutas originales de Cucumber
-// y las rutas compatibles con OpenAPI.
+// y las cinco operaciones del contrato OpenAPI.
 
 const http = require("http");
 const { crearAlmacen } = require("./almacen");
 const servicios = require("./servicios");
 
-// Leer el cuerpo JSON de una solicitud HTTP.
+// Leer los datos JSON enviados al servidor.
 function leerJson(req) {
   return new Promise((resolve) => {
     let datos = "";
@@ -28,7 +28,7 @@ function leerJson(req) {
   });
 }
 
-// Verificar que el token exista y no haya expirado.
+// Comprobar autenticación y expiración del token.
 function usuarioDelToken(almacen, req) {
   const cabecera = req.headers.authorization || "";
   const [esquema, token] = cabecera.split(" ");
@@ -43,7 +43,7 @@ function usuarioDelToken(almacen, req) {
     return null;
   }
 
-  // Eliminar las sesiones vencidas.
+  // Los tokens vencen después de 24 horas.
   if (Date.now() >= sesion.expiraEn) {
     almacen.sesiones.delete(token);
     return null;
@@ -52,10 +52,9 @@ function usuarioDelToken(almacen, req) {
   return sesion.usuarioId;
 }
 
-// Crear el servidor HTTP de PUKAY.
+// Crear servidor HTTP.
 function crearServidor(almacen = crearAlmacen()) {
   const servidor = http.createServer(async (req, res) => {
-    // Enviar respuestas en formato JSON.
     const responder = ({ estado, cuerpo }) => {
       res.writeHead(estado, {
         "Content-Type": "application/json; charset=utf-8",
@@ -97,14 +96,28 @@ function crearServidor(almacen = crearAlmacen()) {
         servicios.listarActividades(almacen, uid),
 
       "POST /registrar_actividad.php": (c, uid) =>
-        servicios.registrarActividadOpenAPI(almacen, uid, c),
+        servicios.registrarActividadOpenAPI(
+          almacen,
+          uid,
+          c
+        ),
 
       "GET /listar_actividades.php": (_c, uid) =>
-        servicios.listarActividadesOpenAPI(almacen, uid),
+        servicios.listarActividadesOpenAPI(
+          almacen,
+          uid
+        ),
 
-      // Nueva ruta: actualizar actividad deportiva.
       "POST /actualizar_actividad.php": (c, uid) =>
         servicios.actualizarActividadOpenAPI(
+          almacen,
+          uid,
+          c
+        ),
+
+      // Última operación del contrato OpenAPI.
+      "POST /eliminar_actividad.php": (c, uid) =>
+        servicios.eliminarActividadOpenAPI(
           almacen,
           uid,
           c
@@ -112,18 +125,20 @@ function crearServidor(almacen = crearAlmacen()) {
     };
 
     // --------------------------------------------
-    // IDENTIFICAR RUTAS DEL CONTRATO OPENAPI
+    // IDENTIFICAR RUTAS OPENAPI
     // --------------------------------------------
 
-    const esRutaOpenAPI = [
+    const rutasOpenAPI = [
       "/login.php",
       "/registrar_actividad.php",
       "/listar_actividades.php",
       "/actualizar_actividad.php",
       "/eliminar_actividad.php",
-    ].includes(ruta);
+    ];
 
-    // Formato de errores según la interfaz.
+    const esRutaOpenAPI = rutasOpenAPI.includes(ruta);
+
+    // Respuestas de error según el tipo de ruta.
     const responderError = (estado, mensaje) =>
       responder({
         estado,
@@ -136,6 +151,24 @@ function crearServidor(almacen = crearAlmacen()) {
               mensaje,
             },
       });
+
+    // --------------------------------------------
+    // VALIDAR MÉTODOS HTTP DE OPENAPI
+    // --------------------------------------------
+
+    if (esRutaOpenAPI) {
+      const metodoPermitido =
+        ruta === "/listar_actividades.php"
+          ? "GET"
+          : "POST";
+
+      if (req.method !== metodoPermitido) {
+        return responderError(
+          405,
+          "Método no permitido"
+        );
+      }
+    }
 
     // --------------------------------------------
     // PROCESAR RUTAS PÚBLICAS
@@ -191,7 +224,7 @@ function crearServidor(almacen = crearAlmacen()) {
     }
 
     // --------------------------------------------
-    // RUTA NO ENCONTRADA
+    // RUTAS NO ENCONTRADAS
     // --------------------------------------------
 
     return responderError(
@@ -200,7 +233,7 @@ function crearServidor(almacen = crearAlmacen()) {
     );
   });
 
-  // Permite a Cucumber consultar el almacén.
+  // Permite consultar el almacén desde Cucumber.
   servidor.almacen = almacen;
 
   return servidor;
