@@ -4,6 +4,9 @@ openapi: 3.0.3
 info:
   title: API REST PUKAY
   version: 0.2.0
+  contact:
+    name: Equipo de desarrollo PUKAY
+    url: https://github.com/kellymoraj8-ops/dossier-pukay
   description: |
     Contrato OpenAPI del proyecto PUKAY.
     Aplicacion Android de seguimiento deportivo.
