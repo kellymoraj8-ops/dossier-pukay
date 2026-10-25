@@ -2,52 +2,46 @@
 
 ## 1. Introducción
 
-El presente documento describe el mapa de herramientas CASE (Computer-Aided Software Engineering) del proyecto PUKAY, una aplicación Android orientada al registro de actividades deportivas, seguimiento de metas personales y consulta del progreso del deportista.
+Este documento presenta el mapa de herramientas CASE (Computer-Aided Software Engineering) del proyecto PUKAY, una aplicación Android para registrar actividades deportivas, gestionar metas personales y consultar el progreso del deportista. Identifica tareas repetitivas, prioriza oportunidades de automatización y documenta pruebas prácticas de herramientas.
 
-El propósito es identificar las actividades del ciclo de vida del software que pueden beneficiarse de la automatización, priorizar las tareas de mayor volumen y seleccionar herramientas que contribuyan a mejorar la eficiencia, trazabilidad y calidad de los artefactos.
+La arquitectura principal de PUKAY utiliza Android Studio con Java y XML, una API REST en PHP y MySQL. Para las actividades de automatización de la Semana 2 se dispone además de un prototipo ejecutable Node.js, utilizado para las pruebas Cucumber y la comprobación de operaciones del contrato OpenAPI. Este prototipo no sustituye al backend PHP/MySQL.
 
-La cadena CASE considera la arquitectura definida para PUKAY: aplicación Android desarrollada en Java y XML, comunicación mediante API REST implementada en PHP y persistencia centralizada en MySQL.
+## 2. Objetivos
 
-## 2. Objetivo del mapa de toolchain
+**Objetivo general:** Organizar y priorizar tareas del proceso de desarrollo de PUKAY, asociando fases, artefactos, responsables y herramientas CASE, y documentar los resultados de su evaluación práctica.
 
-Identificar, organizar y priorizar las tareas del proceso de desarrollo de PUKAY, relacionando cada fase con sus artefactos, responsables y herramientas CASE candidatas.
+**Objetivos específicos:**
 
-### 2.1 Objetivos específicos
-
-- Identificar las fases del ciclo de vida del proyecto.
-- Establecer los artefactos producidos en cada fase.
-- Determinar diez tareas susceptibles de automatización.
-- Priorizar las tareas mediante frecuencia, esfuerzo y riesgo.
-- Clasificar las herramientas en Upper CASE, Lower CASE o I-CASE.
-- Seleccionar las tres tareas con mayor prioridad para realizar pruebas de herramientas.
-- Registrar resultados observables y limitaciones de las herramientas evaluadas.
+- Identificar fases del ciclo de vida, artefactos y responsables.
+- Identificar diez tareas de alto volumen susceptibles de automatización.
+- Priorizar tareas con la fórmula frecuencia × esfuerzo × riesgo.
+- Clasificar herramientas candidatas como Upper CASE, Lower CASE o I-CASE según su función en la cadena.
+- Probar las herramientas de las tres tareas prioritarias, incluyendo una herramienta de IA.
+- Registrar resultados, defectos, correcciones, evidencias y limitaciones.
+- Mantener trazabilidad entre requisitos, contrato, implementación y pruebas.
 
 ## 3. Proceso de desarrollo y mapa de toolchain
 
 | Fase | Actividades principales | Artefactos | Responsable | Herramienta candidata | Categoría CASE |
 |---|---|---|---|---|---|
-| 1. Análisis de requisitos | Identificación de necesidades, historias y criterios de aceptación | Historias de usuario, escenarios, criterios Gherkin | Equipo de análisis | ChatGPT | Upper CASE |
-| 2. Diseño arquitectónico | Definición de componentes, relaciones y decisiones arquitectónicas | Diagramas C4, ADR | Equipo de arquitectura | Mermaid | Upper CASE |
-| 3. Diseño de API | Definición de operaciones, solicitudes y respuestas | Contrato OpenAPI | Equipo backend | Swagger Editor | Upper CASE |
-| 4. Implementación | Desarrollo de funcionalidades Android y servicios PHP | Código Java, XML y PHP | Equipo de desarrollo | Android Studio y VS Code | Lower CASE |
-| 5. Integración | Comunicación entre Android, API REST y MySQL | Endpoints integrados y evidencias | Equipo de desarrollo | Postman | I-CASE |
-| 6. Pruebas | Verificación de funcionalidades y contratos | Casos de prueba, reportes y resultados | Equipo de pruebas | PHPUnit y Spectral | Lower CASE |
-| 7. Documentación | Organización y actualización de artefactos | Archivos Markdown y documentación de API | Equipo de documentación | GitHub y Swagger UI | I-CASE |
-| 8. Control de versiones | Seguimiento de cambios y versiones | Commits, historial y etiquetas | Equipo de desarrollo | Git y GitHub | I-CASE |
+| 1. Análisis de requisitos | Identificar necesidades, redactar historias y criterios | Historias de usuario, escenarios, Gherkin | Equipo de análisis | ChatGPT | Upper CASE |
+| 2. Diseño arquitectónico | Definir componentes, relaciones y decisiones | Diagramas C4 y ADR | Equipo de arquitectura | Mermaid | Upper CASE |
+| 3. Diseño de API | Especificar operaciones, esquemas y respuestas | `api/openapi.yaml` | Equipo backend | Swagger Editor | Upper CASE |
+| 4. Implementación | Desarrollar aplicación, servicios y prototipo | Código Java, XML, PHP y JavaScript | Equipo de desarrollo | Android Studio y VS Code | Lower CASE |
+| 5. Integración | Comprobar interfaces y comunicación | Endpoints y evidencias de integración | Equipo de desarrollo | Postman | I-CASE (función de integración) |
+| 6. Pruebas | Ejecutar criterios de aceptación y revisar contrato | Escenarios Gherkin, resultados y reporte de lint | Equipo de pruebas | Cucumber y Spectral | Lower CASE |
+| 7. Documentación | Mantener documentación técnica y de API | Markdown, documentación OpenAPI | Equipo de documentación | GitHub y Swagger UI | I-CASE (función de integración) |
+| 8. Control de versiones | Registrar cambios, ramas y versiones | Commits, historial, etiquetas | Equipo de desarrollo | Git y GitHub | I-CASE (función de integración) |
 
-**Nota:** Las categorías corresponden al papel propuesto para cada herramienta dentro de la cadena CASE. Algunas herramientas ofrecen funciones que abarcan más de una categoría.
+**Criterio de clasificación:** Upper CASE apoya análisis y diseño; Lower CASE apoya construcción, validación y pruebas; I-CASE integra artefactos y actividades. La categoría indica el papel propuesto en la cadena: Postman, GitHub y Swagger UI no son, por sí solos, plataformas I-CASE completas.
 
 ## 4. Identificación de diez tareas de alto volumen
 
-Para identificar oportunidades de automatización se consideran tareas repetitivas, actividades que requieren esfuerzo manual y operaciones cuyos errores pueden afectar la calidad del sistema.
-
-### 4.1 Criterios de priorización
-
-Se utiliza la siguiente fórmula:
+### 4.1. Método de priorización
 
 **Puntaje = Frecuencia × Esfuerzo × Riesgo**
 
-Cada factor se valora en una escala de 1 a 5.
+Cada factor se califica de 1 a 5. El mínimo es 1 y el máximo es 125.
 
 | Valor | Frecuencia | Esfuerzo | Riesgo |
 |---|---|---|---|
@@ -57,11 +51,9 @@ Cada factor se valora en una escala de 1 a 5.
 | 4 | Alta | Alto | Alto |
 | 5 | Muy alta | Muy alto | Muy alto |
 
-El puntaje mínimo posible es 1 y el máximo es 125.
+Las puntuaciones son estimaciones razonadas del equipo y no mediciones estadísticas de productividad.
 
-Las valoraciones siguientes son estimaciones iniciales del equipo para orientar la selección de herramientas. Deben contrastarse con la experiencia y las pruebas realizadas durante el proyecto.
-
-### 4.2 Matriz de priorización
+### 4.2. Matriz de priorización
 
 | ID | Tarea | Frecuencia | Esfuerzo | Riesgo | Puntaje |
 |---|---|---:|---:|---:|---:|
@@ -76,184 +68,231 @@ Las valoraciones siguientes son estimaciones iniciales del equipo para orientar 
 | T-09 | Mantener trazabilidad entre requisitos y pruebas | 3 | 3 | 3 | 27 |
 | T-10 | Organizar documentación y control de versiones | 4 | 2 | 3 | 24 |
 
-### 4.3 Justificación de las puntuaciones
+### 4.3. Justificación de las puntuaciones
 
-**T-01. Historias de usuario y criterios de aceptación (125 puntos).**
+**T-01 (5 × 5 × 5 = 125).** Frecuencia muy alta porque cada funcionalidad necesita criterios verificables; esfuerzo muy alto por redacción, revisión y ajustes; riesgo muy alto porque las ambigüedades se trasladan al diseño, código y pruebas.
 
-La frecuencia es muy alta porque las funcionalidades requieren criterios verificables. El esfuerzo es elevado al redactar y revisar escenarios. El riesgo es muy alto porque una interpretación incorrecta de los requisitos puede trasladarse al diseño, implementación y pruebas.
+**T-02 (5 × 5 × 4 = 100).** Frecuencia muy alta porque el contrato debe mantenerse alineado con los servicios; esfuerzo muy alto por rutas, esquemas y respuestas; riesgo alto por posibles fallos de integración entre Android y PHP.
 
-**T-02. Contrato OpenAPI (100 puntos).**
+**T-03 (5 × 4 × 5 = 100).** Frecuencia muy alta porque las pruebas se repiten tras cambios; esfuerzo alto por preparación de escenarios y datos; riesgo muy alto porque defectos de autenticación o propiedad de actividades podrían pasar inadvertidos.
 
-La frecuencia es muy alta por la necesidad de mantener sincronizadas las operaciones de la API. El esfuerzo es elevado debido a la definición de rutas, parámetros, esquemas y respuestas. El riesgo es alto porque los errores contractuales afectan la integración entre Android y PHP.
+**T-04 (4 × 4 × 4 = 64).** La documentación cambia con los endpoints; requiere revisar ejemplos y esquemas; las inconsistencias perjudican integración y mantenimiento.
 
-**T-03. Pruebas automatizadas (100 puntos).**
+**T-05 (4 × 4 × 4 = 64).** Las solicitudes y respuestas JSON requieren verificaciones recurrentes; comprobar tipos, campos y formatos demanda trabajo y los errores afectan la comunicación.
 
-La frecuencia es muy alta porque las pruebas deben repetirse después de cambios funcionales. El esfuerzo es alto por la preparación de casos y datos de prueba. El riesgo es muy alto porque los defectos no detectados pueden afectar la autenticación, el registro de actividades y la integridad de los datos.
+**T-06 (4 × 4 × 3 = 48).** Las operaciones CRUD exigen implementación y validaciones repetidas; el riesgo es medio porque existen controles y pruebas que pueden detectar parte de los defectos.
 
-**T-04. Documentación de endpoints (64 puntos).**
+**T-07 (3 × 4 × 3 = 36).** Los diagramas se actualizan cuando cambia la arquitectura; revisarlos requiere esfuerzo alto y el riesgo de desactualización es medio.
 
-La documentación necesita actualizarse ante cambios en los servicios. El esfuerzo y el riesgo son altos porque las inconsistencias dificultan el uso y mantenimiento de la API.
+**T-08 (3 × 3 × 4 = 36).** El registro de IA se actualiza al utilizarla; requiere revisión moderada; el riesgo es alto si se aceptan resultados sin comprobarlos.
 
-**T-05. Validación de JSON (64 puntos).**
+**T-09 (3 × 3 × 3 = 27).** La trazabilidad se revisa periódicamente; enlazar identificadores y pruebas exige esfuerzo medio y su ausencia genera riesgo medio.
 
-Las solicitudes y respuestas deben verificarse continuamente. Los errores en formatos, campos y tipos de datos pueden provocar fallos de comunicación.
-
-**T-06. Implementación CRUD (48 puntos).**
-
-Las operaciones de registro, consulta, actualización y eliminación requieren trabajo de desarrollo y validaciones para conservar la integridad de la información.
-
-**T-07. Actualización de diagramas C4 (36 puntos).**
-
-Los diagramas deben reflejar cambios arquitectónicos. La frecuencia es media, pero su actualización exige revisar componentes y relaciones.
-
-**T-08. Registro de uso de IA (36 puntos).**
-
-La utilización de IA requiere documentar las solicitudes, resultados, defectos y decisiones. El riesgo es alto cuando los resultados generados se aceptan sin verificación.
-
-**T-09. Trazabilidad entre requisitos y pruebas (27 puntos).**
-
-La trazabilidad permite comprobar que los requisitos poseen criterios y pruebas correspondientes. Su mantenimiento implica revisar identificadores y relaciones.
-
-**T-10. Documentación y versionamiento (24 puntos).**
-
-El repositorio requiere actualizaciones frecuentes. El esfuerzo es relativamente bajo por el apoyo de Git y GitHub, aunque los errores de organización pueden afectar la entrega.
+**T-10 (4 × 2 × 3 = 24).** Los cambios de documentación y Git son frecuentes, pero las herramientas reducen el esfuerzo; una organización incorrecta puede afectar la entrega.
 
 ## 5. Selección de las tres tareas prioritarias
 
-De acuerdo con la matriz, las tres tareas con mayor puntaje son:
-
-| Prioridad | Tarea | Puntaje | Herramienta candidata |
+| Prioridad | Tarea | Puntaje | Herramienta evaluada |
 |---|---|---:|---|
-| 1 | T-01: Historias y criterios | 125 | ChatGPT |
-| 2 | T-02: Contrato OpenAPI | 100 | Swagger Editor |
-| 3 | T-03: Pruebas automatizadas | 100 | PHPUnit |
+| 1 | T-01: Historias y criterios | 125 | ChatGPT (IA) |
+| 2 | T-02: Contrato OpenAPI | 100 | Swagger Editor, complementado por Spectral |
+| 3 | T-03: Pruebas automatizadas | 100 | Cucumber para JavaScript |
 
-Estas herramientas se seleccionan como candidatas para su instalación o utilización y evaluación práctica.
+Se emplea **Cucumber**, en lugar de PHPUnit, porque la evidencia ejecutada de la cadena CASE corresponde al prototipo Node.js y sus escenarios Gherkin. Esto no implica que el backend PHP haya sido probado con PHPUnit.
 
-ChatGPT se considera la herramienta de IA requerida por la actividad.
-
-## 6. Plan de pruebas de herramientas CASE
+## 6. Pruebas prácticas de herramientas CASE
 
 ### 6.1. Prueba P-01: ChatGPT
 
-**Tarea asociada:** T-01 — Elaborar y actualizar historias de usuario y criterios de aceptación.
+**Tarea asociada:** T-01 — Elaborar y actualizar historias y criterios de aceptación.
 
-**Herramienta:** ChatGPT (GPT-6).
+**Herramienta:** ChatGPT (GPT-6). **Categoría:** Upper CASE, por su función de apoyo al análisis.
 
-**Objetivo:** Evaluar el uso de inteligencia artificial como apoyo para generar historias de usuario y criterios de aceptación en formato Gherkin, utilizando como referencia el proyecto PUKAY.
+**Objetivo:** Evaluar la asistencia de IA para redactar historias y criterios de aceptación verificables en Gherkin.
 
 **Prompt utilizado:**
 
 > Genera una historia de usuario para PUKAY, una aplicación Android de seguimiento deportivo, sobre el registro de actividades. Incluye criterios de aceptación en formato Gherkin para un registro exitoso y para el rechazo de datos inválidos.
 
+**Procedimiento:**
+
+1. Seleccionar el registro de actividades deportivas como funcionalidad de prueba.
+2. Solicitar una historia y criterios Gherkin a ChatGPT.
+3. Revisar la propuesta frente a los requisitos del proyecto.
+4. Modificar la historia HU-001 y ampliar sus criterios.
+5. Documentar el resultado en `docs/07-historias-y-criterios.md`.
+
+**Resultado:** Se elaboró HU-001, Registro de Actividades Deportivas, con CA-01 (registro exitoso), CA-02 (rechazo de datos inválidos) y CA-03 (campos obligatorios).
+
+**Defectos identificados:** La propuesta inicial no contemplaba todos los campos ni un escenario independiente para campos obligatorios; tampoco precisaba suficientemente la relación entre usuario autenticado, API REST y persistencia.
+
+**Corrección y decisión:** Se amplió la historia, se incorporó un tercer criterio y se propusieron reglas de negocio. **Decisión: modificado.**
+
+**Verificación:** Revisión documental de la historia y los criterios. Sigue pendiente confirmar la correspondencia exacta de CA-01, CA-02 y CA-03 con las pruebas ejecutadas.
+
+**Evidencia:** `docs/07-historias-y-criterios.md`, HU-001 y criterios CA-01 a CA-03; historial de revisión de la propuesta.
+
+**Estado:** Prueba documental realizada; trazabilidad funcional por verificar.
+
+### 6.2. Prueba P-02: Swagger Editor y Spectral
+
+**Tarea asociada:** T-02 — Diseñar y mantener el contrato OpenAPI.
+
+**Herramientas:** Swagger Editor y Spectral. **Categoría:** Upper CASE para el diseño y Lower CASE para la validación automatizada.
+
+**Objetivo:** Comprobar la visualización del contrato OpenAPI de PUKAY y validarlo sin errores de severidad `error`.
+
 **Procedimiento realizado:**
 
-1. Se seleccionó la funcionalidad de registro de actividades deportivas de PUKAY.
-2. Se solicitó a ChatGPT generar una historia de usuario y criterios de aceptación.
-3. Se revisó la propuesta generada.
-4. Se desarrolló la historia HU-001 incorporando tres criterios de aceptación.
-5. Se documentó la historia en `docs/07-historias-y-criterios.md`.
+1. Abrir Swagger Editor e importar `api/openapi.yaml`.
+2. Comprobar que aparecen las cinco operaciones definidas.
+3. Ejecutar Spectral desde la terminal de VS Code.
+4. Identificar el problema de configuración de reglas.
+5. Crear `.spectral.yaml` con `extends: ["spectral:oas"]`.
+6. Repetir la ejecución de Spectral y registrar el resultado.
 
-**Resultado obtenido:**
+**Operaciones visibles en Swagger Editor:**
 
-Se elaboró la historia HU-001: Registro de Actividades Deportivas, con los siguientes criterios:
+| Método | Ruta | Descripción |
+|---|---|---|
+| POST | `/login.php` | Iniciar sesión |
+| POST | `/registrar_actividad.php` | Registrar actividad deportiva |
+| GET | `/listar_actividades.php` | Consultar historial deportivo |
+| POST | `/actualizar_actividad.php` | Actualizar actividad deportiva |
+| POST | `/eliminar_actividad.php` | Eliminar actividad deportiva |
 
-- CA-01: Registro exitoso de una actividad.
-- CA-02: Rechazo de datos inválidos.
-- CA-03: Validación de campos obligatorios.
+**Comando ejecutado:**
 
-**Defectos identificados:**
+```powershell
+npx.cmd @stoplight/spectral-cli lint api/openapi.yaml
+```
 
-La propuesta inicial no contemplaba todos los campos de la actividad deportiva ni la validación de campos obligatorios como un escenario independiente. Además, no especificaba completamente la relación entre el usuario autenticado, la API REST y la persistencia en MySQL.
+**Defecto identificado:** En la primera ejecución apareció `No ruleset has been found.`. Era un problema de configuración de Spectral, no una prueba de que el contrato estuviera incorrecto.
 
-**Decisión:** Modificado.
+**Corrección aplicada:** Se creó el archivo `.spectral.yaml` en la raíz del repositorio con este contenido:
 
-Se amplió la historia para incluir los campos utilizados en PUKAY, un tercer criterio de aceptación y seis reglas de negocio propuestas.
+```yaml
+extends: ["spectral:oas"]
+```
 
-**Verificación realizada:**
+**Resultado obtenido:** Swagger Editor mostró las cinco operaciones. Tras configurar las reglas, Spectral devolvió:
 
-Se revisó la estructura documental de HU-001 y sus criterios Gherkin. La verificación funcional contra el código de PUKAY y las pruebas automatizadas continúa pendiente.
+```text
+No results with a severity of 'error' found!
+```
 
-**Evidencia:**
+**Decisión:** Aceptado con modificaciones (configuración de ruleset).
 
-- Historia HU-001 documentada en `docs/07-historias-y-criterios.md`.
-- Criterios de aceptación CA-01, CA-02 y CA-03.
-- Registro de las modificaciones realizadas sobre la propuesta inicial.
+**Verificación:** Visualización de las cinco operaciones y ejecución del linter sin errores de severidad `error`.
 
-**Estado:** Prueba documental realizada; validación funcional pendiente.
-### 6.2 Prueba P-02: Swagger Editor
+**Evidencias:** `api/openapi.yaml`, `.spectral.yaml`, captura de Swagger Editor y salida de Spectral en la terminal.
 
-**Tarea asociada:** T-02.
+**Limitaciones:** El mensaje confirma ausencia de errores de esa severidad, pero no necesariamente ausencia de advertencias. La validación estática no demuestra que el servidor PHP/MySQL responda correctamente.
 
-**Objetivo:** Comprobar la utilidad de Swagger Editor para elaborar y revisar el contrato OpenAPI de PUKAY.
+**Estado:** Prueba práctica ejecutada satisfactoriamente.
 
-**Procedimiento propuesto:**
+### 6.3. Prueba P-03: Cucumber
 
-1. Elaborar el archivo `api/openapi.yaml`.
-2. Definir al menos cuatro endpoints.
-3. Incorporar parámetros, solicitudes, respuestas y esquemas.
-4. Revisar el contrato en Swagger Editor.
-5. Ejecutar adicionalmente Spectral para comprobar que no existan errores de lint.
+**Tarea asociada:** T-03 — Ejecutar y verificar pruebas automatizadas de la API.
 
-**Resultado:** Pendiente de ejecución.
+**Herramienta:** Cucumber para JavaScript. **Categoría:** Lower CASE.
 
-**Evidencia:** Pendiente.
+**Objetivo:** Automatizar escenarios Gherkin para comprobar reglas de negocio del prototipo ejecutable de PUKAY.
 
-### 6.3 Prueba P-03: PHPUnit
+**Procedimiento realizado:**
 
-**Tarea asociada:** T-03.
+1. Preparar el entorno Node.js con Cucumber.
+2. Redactar escenarios de aceptación Gherkin.
+3. Implementar las definiciones de pasos en JavaScript.
+4. Crear servicios ejecutables del prototipo.
+5. Incorporar cuatro escenarios de actualización, eliminación y propiedad de actividades.
+6. Ejecutar `npm.cmd test` y revisar los resultados.
+7. Ejecutar `npm.cmd run lint` para verificar el código con ESLint.
 
-**Objetivo:** Evaluar la ejecución automatizada de pruebas sobre los servicios PHP de PUKAY.
+**Resultado:** Se confirmaron **16 escenarios aprobados** en Cucumber. Entre ellos:
 
-**Procedimiento propuesto:**
+- **CP13:** Actualización de una actividad propia.
+- **CP14:** Rechazo de actualización de una actividad ajena.
+- **CP15:** Eliminación de una actividad propia.
+- **CP16:** Rechazo de eliminación de una actividad ajena.
 
-1. Preparar un entorno de pruebas PHP.
-2. Seleccionar criterios de aceptación verificables.
-3. Implementar pruebas derivadas de dichos criterios.
-4. Ejecutar PHPUnit.
-5. Registrar pruebas aprobadas, fallidas y errores encontrados.
+**Defectos identificados durante la implementación:** Definición duplicada de un paso de Cucumber, falta de correspondencia de un paso Gherkin y problema con la disponibilidad/exportación de `eliminarActividadOpenAPI`.
 
-**Resultado:** Pendiente de ejecución.
+**Corrección aplicada:** Se diferenciaron las definiciones de pasos, se ajustó la correspondencia Gherkin–JavaScript y se corrigió la exportación de la función; después se repitieron las pruebas.
 
-**Evidencia:** Pendiente.
+**Comandos de verificación:**
+
+```powershell
+npm.cmd test
+npm.cmd run lint
+```
+
+**Resultados confirmados:** 16 escenarios aprobados; ESLint sin errores.
+
+**Decisión:** Aceptado con modificaciones.
+
+**Evidencias:**
+
+- `tests/features/hu6-gestion-actividades-openapi.feature`
+- `tests/steps/gestion-actividades-openapi.steps.js`
+- `src/servicios.js`
+- `src/servidor.js`
+- Salida de Cucumber y ESLint en terminal.
+
+**Limitaciones:** Los cuatro escenarios adicionales comprueban funciones del servicio Node.js directamente; no equivalen a pruebas de integración HTTP ni a pruebas del backend PHP/MySQL.
+
+**Estado:** Prueba ejecutada satisfactoriamente.
 
 ## 7. Relación entre artefactos de la cadena CASE
 
-La cadena de trabajo propuesta sigue esta secuencia:
+**Escenarios del dossier → Historias de usuario → Criterios Gherkin → Contrato OpenAPI → Documentación y mock → Stubs → Prototipo ejecutable → Pruebas automatizadas → Evidencias**
 
-**Escenarios del dossier → Historias de usuario → Criterios Gherkin → Contrato OpenAPI → Documentación y mock → Stubs → Implementación PHP → Pruebas automatizadas → Evidencias**
-
-Cada artefacto debe mantener relación con el anterior para facilitar la trazabilidad.
-
-Los identificadores HU, CA, T, E y ADR se utilizarán de acuerdo con las convenciones documentadas en el repositorio.
-
-## 8. Riesgos iniciales
-
-| ID | Riesgo | Tratamiento propuesto |
+| Etapa | Artefacto o evidencia | Relación |
 |---|---|---|
-| R-01 | Historias generadas por IA que no coincidan con los requisitos | Revisión contra escenarios del dossier |
-| R-02 | Inconsistencias entre OpenAPI y servicios PHP | Validación del contrato y pruebas |
-| R-03 | Pruebas que no representen los criterios de aceptación | Vinculación explícita entre CA y pruebas |
-| R-04 | Dependencia excesiva de herramientas de IA | Revisión humana y ejecución de verificaciones |
-| R-05 | Documentación desactualizada | Control de versiones y revisión de artefactos |
+| Requisitos | `docs/07-historias-y-criterios.md` | Historias HU y criterios CA |
+| Contrato | `api/openapi.yaml` | Operaciones que materializan requisitos |
+| Validación | `.spectral.yaml` y ejecución de Spectral | Comprobación estática del contrato |
+| Implementación de prueba | `src/` | Prototipo Node.js para la cadena CASE |
+| Pruebas | `tests/features/` y `tests/steps/` | Escenarios Gherkin y pasos ejecutables |
+| Calidad | Cucumber y ESLint | Resultados reproducibles |
+| Documentación y mock | Swagger UI / mock, si se generan | Evidencia complementaria pendiente de verificar |
+
+Los identificadores HU, CA, T, E y ADR deben conservarse de manera consistente. La correspondencia exacta entre todos los criterios, rutas y pruebas queda sujeta a revisión final.
+
+## 8. Riesgos y tratamiento
+
+| ID | Riesgo | Tratamiento |
+|---|---|---|
+| R-01 | Historias generadas por IA no alineadas con los requisitos | Revisión humana frente al dossier |
+| R-02 | Diferencias entre contrato OpenAPI y servicios PHP | Validación del contrato y pruebas de integración |
+| R-03 | Pruebas que no representan criterios de aceptación | Trazabilidad explícita HU–CA–escenario |
+| R-04 | Dependencia excesiva de IA | Verificación de cada resultado antes de aceptarlo |
+| R-05 | Documentación desactualizada | Revisiones y control de versiones |
+| R-06 | Confundir prototipo Node.js con backend PHP/MySQL | Documentar alcance y límites de cada prueba |
+| R-07 | Falta de evidencia reproducible | Conservar comandos, capturas y resultados |
+| R-08 | Advertencias no atendidas en el contrato | Revisar salida completa de Spectral y corregir lo necesario |
 
 ## 9. Estado de verificación
 
 | Elemento | Estado |
 |---|---|
-| Mapa de fases y herramientas candidatas | Propuesto |
-| Diez tareas priorizadas | Propuesto |
-| Justificación de puntuaciones | Documentada |
-| Prueba práctica de ChatGPT | Pendiente |
-| Prueba práctica de Swagger Editor | Pendiente |
-| Prueba práctica de PHPUnit | Pendiente |
-| Evidencias de ejecución | Pendiente |
-| Selección definitiva de herramientas | Pendiente de evaluación |
+| Mapa de fases, artefactos, responsables y herramientas | Documentado |
+| Diez tareas de alto volumen | Documentadas |
+| Cálculo y justificación de puntuaciones | Documentados |
+| T-01 / P-01: ChatGPT | Prueba documental realizada; trazabilidad funcional pendiente |
+| T-02 / P-02: Swagger Editor | Cinco operaciones visibles en la captura |
+| Validación Spectral | Ejecutada sin errores de severidad `error` |
+| T-03 / P-03: Cucumber | 16 escenarios aprobados |
+| ESLint | Ejecutado sin errores |
+| Evidencias disponibles | Contrato, configuración, código, pruebas y capturas/salidas observadas |
+| Documentación de API, mock y stubs | Verificación de entregables pendiente |
+| Matriz comparativa y selección definitiva | Pendiente de revisión en el informe correspondiente |
+| Trazabilidad completa HU–CA–pruebas | Pendiente de revisión final |
 
-## 10. Conclusión preliminar
+## 10. Conclusión
 
-El mapa de toolchain identifica las principales oportunidades de automatización en el desarrollo de PUKAY y establece una priorización inicial de diez tareas.
+El mapa de toolchain de PUKAY identifica ocho fases y diez tareas de alto volumen, priorizadas mediante frecuencia, esfuerzo y riesgo. Las tres tareas con mayor puntuación son la elaboración de historias y criterios (T-01), el mantenimiento del contrato OpenAPI (T-02) y la automatización de pruebas (T-03).
 
-Las actividades relacionadas con requisitos, contratos de API y pruebas automatizadas presentan los mayores puntajes, por lo que se consideran prioritarias para la evaluación práctica.
+La prueba de ChatGPT produjo una historia y criterios que requirieron revisión y modificación. Swagger Editor permitió visualizar las cinco operaciones de PUKAY y Spectral confirmó que no se encontraron errores de severidad `error` después de configurar su conjunto de reglas. Cucumber ejecutó satisfactoriamente 16 escenarios, mientras que ESLint no reportó errores.
 
-La selección definitiva de herramientas dependerá de los resultados observables de las pruebas y de la matriz de evaluación y selección, evitando asumir que una herramienta es adecuada únicamente por sus características declaradas.
+Estas pruebas respaldan el uso de las herramientas evaluadas dentro de la cadena CASE. Para cerrar completamente la entrega todavía es necesario verificar la documentación generada, el mock y los stubs, revisar la trazabilidad y completar la matriz de evaluación y selección. Los resultados del prototipo Node.js no deben presentarse como pruebas del backend PHP/MySQL de producción.

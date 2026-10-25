@@ -1,17 +1,41 @@
-"use strict";
-// Almacén en memoria del esqueleto. En PUKAY la persistencia real es MySQL (ADR-001).
 
-const DEPORTES = ["running", "caminata", "ciclismo", "fútbol", "gimnasio"];
+"use strict";
+
+// Almacén en memoria del esqueleto Node.js.
+// En PUKAY, la persistencia real utiliza MySQL (ADR-001).
+
+const DEPORTES = [
+  "running",
+  "caminata",
+  "ciclismo",
+  "fútbol",
+  "gimnasio",
+  "natación",
+];
 
 function crearAlmacen() {
   return {
-    usuarios: [], // { id, correo, sal, hash }
-    sesiones: new Map(), // token -> id de usuario
-    actividades: [], // { id, usuarioId, deporte, fecha, duracion, distancia, comentario }
-    deportes: DEPORTES.map((nombre, i) => ({ id: i + 1, nombre })),
+    // Usuarios registrados.
+    usuarios: [],
+
+    // Relación entre tokens y usuarios.
+    sesiones: new Map(),
+
+    // Actividades deportivas registradas.
+    actividades: [],
+
+    // Catálogo de deportes.
+    deportes: DEPORTES.map((nombre, i) => ({
+      id: i + 1,
+      nombre,
+    })),
+
     siguienteUsuario: 1,
     siguienteActividad: 1,
   };
 }
 
-module.exports = { crearAlmacen };
+module.exports = {
+  crearAlmacen,
+};
+

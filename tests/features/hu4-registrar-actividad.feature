@@ -1,3 +1,4 @@
+
 # language: es
 @HU4 @E5
 Característica: Registrar una actividad deportiva
@@ -16,5 +17,12 @@ Característica: Registrar una actividad deportiva
   Escenario: Registro de una actividad sin duración
     Dado que "ana@ejemplo.com" inició sesión
     Cuando registra una actividad de "ciclismo" el "2026-10-05" sin duración
+    Entonces el servicio responde con el código 400
+    Y el historial de "ana@ejemplo.com" contiene 0 actividades
+
+  @CA11 @CP17
+  Escenario: Rechazar una actividad con duración y distancia negativas
+    Dado que "ana@ejemplo.com" inició sesión
+    Cuando registra una actividad de "ciclismo" el "2026-10-05" con duración -10 minutos y distancia -5 km
     Entonces el servicio responde con el código 400
     Y el historial de "ana@ejemplo.com" contiene 0 actividades
