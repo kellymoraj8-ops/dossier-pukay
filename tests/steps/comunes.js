@@ -7,7 +7,9 @@ const { crearServidor } = require("../../src/servidor");
 
 Before(async function () {
   this.servidor = crearServidor();
+
   await new Promise((ok) => this.servidor.listen(0, ok));
+
   this.base = `http://localhost:${this.servidor.address().port}`;
   this.tokens = {};
   this.respuesta = null;
@@ -18,14 +20,20 @@ After(async function () {
 });
 
 async function llamar(mundo, metodo, ruta, cuerpo, token) {
-  const cabeceras = { "Content-Type": "application/json" };
+  const cabeceras = {
+    "Content-Type": "application/json",
+  };
 
-  if (token) cabeceras.Authorization = `Bearer ${token}`;
+  if (token) {
+    cabeceras.Authorization = `Bearer ${token}`;
+  }
 
   const r = await fetch(`${mundo.base}${ruta}`, {
     method: metodo,
     headers: cabeceras,
-    body: cuerpo === undefined ? undefined : JSON.stringify(cuerpo),
+    body: cuerpo === undefined
+      ? undefined
+      : JSON.stringify(cuerpo),
   });
 
   mundo.respuesta = {
@@ -37,10 +45,19 @@ async function llamar(mundo, metodo, ruta, cuerpo, token) {
 }
 
 async function registrar(mundo, correo, password) {
-  return llamar(mundo, "POST", "/api/auth/registro", { correo, password });
+  return llamar(
+    mundo,
+    "POST",
+    "/api/auth/registro",
+    { correo, password }
+  );
 }
 
-async function iniciarSesion(mundo, correo, password = "ClaveDePrueba") {
+async function iniciarSesion(
+  mundo,
+  correo,
+  password = "ClaveDePrueba"
+) {
   await registrar(mundo, correo, password);
 
   const r = await llamar(
@@ -53,15 +70,27 @@ async function iniciarSesion(mundo, correo, password = "ClaveDePrueba") {
   mundo.tokens[correo] = r.cuerpo.token;
 }
 
-Given("que el correo {string} no está registrado", function (correo) {
-  assert.ok(
-    !this.servidor.almacen.usuarios.some((u) => u.correo === correo)
-  );
-});
+// ----------------------------------------------------
+// REGISTRO DE USUARIOS
+// ----------------------------------------------------
 
-Given("que el correo {string} ya está registrado", async function (correo) {
-  await registrar(this, correo, "ClaveDePrueba");
-});
+Given(
+  "que el correo {string} no está registrado",
+  function (correo) {
+    assert.ok(
+      !this.servidor.almacen.usuarios.some(
+        (u) => u.correo === correo
+      )
+    );
+  }
+);
+
+Given(
+  "que el correo {string} ya está registrado",
+  async function (correo) {
+    await registrar(this, correo, "ClaveDePrueba");
+  }
+);
 
 Given(
   "que el correo {string} ya está registrado con la contraseña {string}",
@@ -70,9 +99,16 @@ Given(
   }
 );
 
-Given("que {string} inició sesión", async function (correo) {
-  await iniciarSesion(this, correo);
-});
+Given(
+  "que {string} inició sesión",
+  async function (correo) {
+    await iniciarSesion(this, correo);
+  }
+);
+
+// ----------------------------------------------------
+// INICIO DE SESIÓN
+// ----------------------------------------------------
 
 When(
   "se solicita el registro con correo {string} y contraseña {string}",
@@ -93,27 +129,59 @@ When(
   }
 );
 
-When("se inspeccionan los usuarios almacenados", function () {
-  this.usuarios = this.servidor.almacen.usuarios;
-});
+When(
+  "se inspeccionan los usuarios almacenados",
+  function () {
+    this.usuarios = this.servidor.almacen.usuarios;
+  }
+);
 
-When("se consultan los deportes", async function () {
-  await llamar(
-    this,
-    "GET",
-    "/api/deportes",
-    undefined,
-    Object.values(this.tokens)[0]
-  );
-});
+// ----------------------------------------------------
+// CONSULTA DE DEPORTES
+// ----------------------------------------------------
 
-When("se consultan los deportes sin token", async function () {
-  await llamar(this, "GET", "/api/deportes");
-});
+When(
+  "se consultan los deportes",
+  async function () {
+    await llamar(
+      this,
+      "GET",
+      "/api/deportes",
+      undefined,
+      Object.values(this.tokens)[0]
+    );
+  }
+);
 
-When("se consulta el historial sin token", async function () {
-  await llamar(this, "GET", "/api/actividades");
-});
+When(
+  "se consultan los deportes sin token",
+  async function () {
+    await llamar(
+      this,
+      "GET",
+      "/api/deportes"
+    );
+  }
+);
+
+// ----------------------------------------------------
+// CONSULTA DE HISTORIAL SIN TOKEN
+// ----------------------------------------------------
+
+When(
+  "se consulta el historial sin token",
+  async function () {
+    await llamar(
+      this,
+      "GET",
+      "/api/actividades"
+    );
+  }
+);
+
+// ----------------------------------------------------
+// REGISTRO DE ACTIVIDADES
+// ----------------------------------------------------
 
 When(
   "registra una actividad de {string} el {string} de {int} minutos y {int} km",
@@ -122,7 +190,12 @@ When(
       this,
       "POST",
       "/api/actividades",
-      { deporte, fecha, duracion, distancia },
+      {
+        deporte,
+        fecha,
+        duracion,
+        distancia,
+      },
       Object.values(this.tokens)[0]
     );
   }
@@ -135,13 +208,16 @@ When(
       this,
       "POST",
       "/api/actividades",
-      { deporte, fecha },
+      {
+        deporte,
+        fecha,
+      },
       Object.values(this.tokens)[0]
     );
   }
 );
 
-// Nuevo paso: permite probar duración y distancia negativas.
+// Permite comprobar valores negativos.
 When(
   "registra una actividad de {string} el {string} con duración {int} minutos y distancia {int} km",
   async function (deporte, fecha, duracion, distancia) {
@@ -149,11 +225,20 @@ When(
       this,
       "POST",
       "/api/actividades",
-      { deporte, fecha, duracion, distancia },
+      {
+        deporte,
+        fecha,
+        duracion,
+        distancia,
+      },
       Object.values(this.tokens)[0]
     );
   }
 );
+
+// ----------------------------------------------------
+// PREPARACIÓN DE ACTIVIDADES PARA EL HISTORIAL
+// ----------------------------------------------------
 
 Given(
   "que {string} inició sesión y registró {int} actividades",
@@ -197,63 +282,123 @@ Given(
   }
 );
 
-When("{string} consulta su historial", async function (correo) {
-  await llamar(
-    this,
-    "GET",
-    "/api/actividades",
-    undefined,
-    this.tokens[correo]
-  );
-});
+When(
+  "{string} consulta su historial",
+  async function (correo) {
+    await llamar(
+      this,
+      "GET",
+      "/api/actividades",
+      undefined,
+      this.tokens[correo]
+    );
+  }
+);
 
-Then("el servicio responde con el código {int}", function (codigo) {
-  assert.strictEqual(this.respuesta.estado, codigo);
-});
+// ----------------------------------------------------
+// VALIDACIÓN DE RESPUESTAS HTTP
+// ----------------------------------------------------
 
-Then("la respuesta contiene el correo {string}", function (correo) {
-  assert.strictEqual(this.respuesta.cuerpo.correo, correo);
-});
+Then(
+  "el servicio responde con el código {int}",
+  function (codigo) {
+    assert.strictEqual(this.respuesta.estado, codigo);
+  }
+);
 
-Then("la respuesta no contiene la contraseña", function () {
-  const texto = JSON.stringify(this.respuesta.cuerpo);
+Then(
+  "la respuesta contiene el correo {string}",
+  function (correo) {
+    assert.strictEqual(
+      this.respuesta.cuerpo.correo,
+      correo
+    );
+  }
+);
 
-  assert.ok(
-    !/password|hash|sal/i.test(texto),
-    `La respuesta expone datos de contraseña: ${texto}`
-  );
-});
+Then(
+  "la respuesta no contiene la contraseña",
+  function () {
+    const texto = JSON.stringify(this.respuesta.cuerpo);
 
-Then("la respuesta incluye un token", function () {
-  assert.ok(
-    typeof this.respuesta.cuerpo.token === "string" &&
-    this.respuesta.cuerpo.token.length > 0
-  );
-});
+    assert.ok(
+      !/password|hash|sal/i.test(texto),
+      `La respuesta expone datos de contraseña: ${texto}`
+    );
+  }
+);
 
-Then("la respuesta no incluye un token", function () {
-  assert.strictEqual(this.respuesta.cuerpo.token, undefined);
-});
+Then(
+  "la respuesta incluye un token",
+  function () {
+    assert.ok(
+      typeof this.respuesta.cuerpo.token === "string" &&
+      this.respuesta.cuerpo.token.length > 0
+    );
+  }
+);
 
-Then("0 usuarios tienen la contraseña en texto plano", function () {
-  const enTextoPlano = this.usuarios.filter((u) =>
-    Object.values(u).includes("ClaveDePrueba")
-  );
+Then(
+  "la respuesta no incluye un token",
+  function () {
+    assert.strictEqual(
+      this.respuesta.cuerpo.token,
+      undefined
+    );
+  }
+);
 
-  assert.strictEqual(enTextoPlano.length, 0);
-});
+// ----------------------------------------------------
+// VALIDACIÓN DE SEGURIDAD DE CONTRASEÑAS
+// ----------------------------------------------------
 
-Then("el 100 % de los usuarios tiene hash y sal", function () {
-  assert.ok(this.usuarios.length > 0);
-  assert.ok(this.usuarios.every((u) => u.hash && u.sal));
-});
+Then(
+  "0 usuarios tienen la contraseña en texto plano",
+  function () {
+    const enTextoPlano = this.usuarios.filter(
+      (u) =>
+        Object.values(u).includes("ClaveDePrueba")
+    );
 
-Then("el catálogo contiene {string}", function (lista) {
-  const esperados = lista.split(",").map((s) => s.trim());
-  const nombres = this.respuesta.cuerpo.map((d) => d.nombre);
+    assert.strictEqual(enTextoPlano.length, 0);
+  }
+);
 
-  assert.deepStrictEqual(nombres, esperados);
-});
+Then(
+  "el 100 % de los usuarios tiene hash y sal",
+  function () {
+    assert.ok(this.usuarios.length > 0);
+
+    assert.ok(
+      this.usuarios.every(
+        (u) => u.hash && u.sal
+      )
+    );
+  }
+);
+
+// ----------------------------------------------------
+// VALIDACIÓN DEL CATÁLOGO DE DEPORTES
+// ----------------------------------------------------
+
+Then(
+  "el catálogo contiene {string}",
+  function (lista) {
+    const esperados = lista
+      .split(",")
+      .map((s) => s.trim());
+
+    const nombres = this.respuesta.cuerpo.map(
+      (d) => d.nombre
+    );
+
+    assert.deepStrictEqual(nombres, esperados);
+  }
+);
+
+// ----------------------------------------------------
+// VALIDACIÓN DEL HISTORIAL POR DEPORTE
+// ----------------------------------------------------
 
 Then(
   "el historial de {string} contiene {int} actividad(es) de {string}",
@@ -266,7 +411,10 @@ Then(
       this.tokens[correo]
     );
 
-    const de = r.cuerpo.filter((a) => a.deporte === deporte);
+    const de = r.cuerpo.filter(
+      (a) => a.deporte === deporte
+    );
+
     assert.strictEqual(de.length, n);
   }
 );
@@ -286,21 +434,52 @@ Then(
   }
 );
 
-Then("el historial tiene {int} actividades", function (n) {
-  assert.strictEqual(this.respuesta.cuerpo.length, n);
-});
+Then(
+  "el historial tiene {int} actividades",
+  function (n) {
+    assert.strictEqual(
+      this.respuesta.cuerpo.length,
+      n
+    );
+  }
+);
 
-Then("{int} actividades pertenecen a otro usuario", function (n) {
-  const ajenas = this.servidor.almacen.actividades.filter(
-    (a) =>
-      a.usuarioId !==
-      this.servidor.almacen.sesiones.get(
-        this.tokens["ana@ejemplo.com"]
-      )
-  );
+// ----------------------------------------------------
+// VALIDACIÓN DE AISLAMIENTO ENTRE USUARIOS
+// ----------------------------------------------------
 
-  const ids = new Set(ajenas.map((a) => a.id));
-  const filtradas = this.respuesta.cuerpo.filter((a) => ids.has(a.id));
+Then(
+  "{int} actividades pertenecen a otro usuario",
+  function (n) {
+    // Obtener la sesión de Ana.
+    const sesionAna = this.servidor.almacen.sesiones.get(
+      this.tokens["ana@ejemplo.com"]
+    );
 
-  assert.strictEqual(filtradas.length, n);
-});
+    // Comprobar que la sesión exista.
+    assert.ok(
+      sesionAna,
+      "No se encontró la sesión de Ana"
+    );
+
+    // Obtener el identificador de Ana.
+    const usuarioIdAna = sesionAna.usuarioId;
+
+    // Identificar actividades de otros usuarios.
+    const ajenas = this.servidor.almacen.actividades.filter(
+      (a) => a.usuarioId !== usuarioIdAna
+    );
+
+    // Identificadores de las actividades ajenas.
+    const idsAjenos = new Set(
+      ajenas.map((a) => a.id)
+    );
+
+    // Comprobar si aparecen en el historial de Ana.
+    const filtradas = this.respuesta.cuerpo.filter(
+      (a) => idsAjenos.has(a.id)
+    );
+
+    assert.strictEqual(filtradas.length, n);
+  }
+);
