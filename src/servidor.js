@@ -1,15 +1,14 @@
 
 "use strict";
 
-// Servidor HTTP de PUKAY.
-// Conserva las rutas originales del prototipo Node.js
-// y conecta las rutas del contrato OpenAPI de PHP.
+// Servidor HTTP del prototipo Node.js de PUKAY.
+// Conserva las rutas originales de Cucumber
+// y las rutas compatibles con OpenAPI.
 
 const http = require("http");
 const { crearAlmacen } = require("./almacen");
 const servicios = require("./servicios");
 
-// Leer el cuerpo JSON de una solicitud HTTP.
 function leerJson(req) {
   return new Promise((resolve) => {
     let datos = "";
@@ -28,7 +27,7 @@ function leerJson(req) {
   });
 }
 
-// Identificar al usuario mediante el token Bearer.
+// Verifica que el token exista y no esté vencido.
 function usuarioDelToken(almacen, req) {
   const cabecera = req.headers.authorization || "";
   const [esquema, token] = cabecera.split(" ");
@@ -37,14 +36,23 @@ function usuarioDelToken(almacen, req) {
     return null;
   }
 
-  return almacen.sesiones.get(token) ?? null;
+  const sesion = almacen.sesiones.get(token);
+
+  if (!sesion) {
+    return null;
+  }
+
+  // Rechazar y eliminar sesiones vencidas.
+  if (Date.now() >= sesion.expiraEn) {
+    almacen.sesiones.delete(token);
+    return null;
+  }
+
+  return sesion.usuarioId;
 }
 
-// Crear servidor HTTP.
 function crearServidor(almacen = crearAlmacen()) {
   const servidor = http.createServer(async (req, res) => {
-
-    // Enviar una respuesta HTTP en formato JSON.
     const responder = ({ estado, cuerpo }) => {
       res.writeHead(estado, {
         "Content-Type": "application/json; charset=utf-8",
@@ -53,136 +61,90 @@ function crearServidor(almacen = crearAlmacen()) {
       res.end(JSON.stringify(cuerpo));
     };
 
-    // Obtener método HTTP y ruta solicitada.
     const ruta = req.url.split("?")[0];
     const clave = `${req.method} ${ruta}`;
 
-    // ------------------------------------------------
-    // RUTAS PÚBLICAS
-    // ------------------------------------------------
-
+    // Rutas que no requieren autenticación.
     const rutasPublicas = {
-
-      // Ruta original del prototipo Node.js.
       "POST /api/auth/registro": (c) =>
         servicios.registrarUsuario(almacen, c),
 
-      // Ruta original del prototipo Node.js.
       "POST /api/auth/login": (c) =>
         servicios.iniciarSesion(almacen, c),
 
-      // Ruta compatible con el contrato OpenAPI.
       "POST /login.php": (c) =>
         servicios.iniciarSesionOpenAPI(almacen, c),
     };
 
-    // ------------------------------------------------
-    // RUTAS PROTEGIDAS
-    // ------------------------------------------------
-
+    // Rutas que requieren un token válido.
     const rutasProtegidas = {
-
-      // Consultar deportes: ruta original.
       "GET /api/deportes": () =>
         servicios.listarDeportes(almacen),
 
-      // Registrar actividad: ruta original.
       "POST /api/actividades": (c, uid) =>
         servicios.registrarActividad(almacen, uid, c),
 
-      // Consultar historial: ruta original.
       "GET /api/actividades": (_c, uid) =>
         servicios.listarActividades(almacen, uid),
 
-      // Registrar actividad: ruta OpenAPI.
       "POST /registrar_actividad.php": (c, uid) =>
-        servicios.registrarActividadOpenAPI(
-          almacen,
-          uid,
-          c
-        ),
+        servicios.registrarActividadOpenAPI(almacen, uid, c),
 
-      // Consultar historial: ruta OpenAPI.
       "GET /listar_actividades.php": (_c, uid) =>
-        servicios.listarActividadesOpenAPI(
-          almacen,
-          uid
-        ),
+        servicios.listarActividadesOpenAPI(almacen, uid),
     };
 
-    // ------------------------------------------------
-    // PROCESAR RUTAS PÚBLICAS
-    // ------------------------------------------------
+    const esRutaOpenAPI = [
+      "/login.php",
+      "/registrar_actividad.php",
+      "/listar_actividades.php",
+      "/actualizar_actividad.php",
+      "/eliminar_actividad.php",
+    ].includes(ruta);
+
+    // Respuestas de error compatibles con cada interfaz.
+    const responderError = (estado, mensaje) =>
+      responder({
+        estado,
+        cuerpo: esRutaOpenAPI
+          ? { estado: "error", mensaje }
+          : { mensaje },
+      });
 
     if (rutasPublicas[clave]) {
       const cuerpo = await leerJson(req);
 
       if (cuerpo === null) {
-        return responder({
-          estado: 400,
-          cuerpo: {
-            mensaje: "JSON inválido",
-          },
-        });
+        return responderError(400, "JSON inválido");
       }
 
-      return responder(
-        rutasPublicas[clave](cuerpo)
-      );
+      return responder(rutasPublicas[clave](cuerpo));
     }
 
-    // ------------------------------------------------
-    // PROCESAR RUTAS PROTEGIDAS
-    // ------------------------------------------------
-
     if (rutasProtegidas[clave]) {
-      const usuarioId = usuarioDelToken(
-        almacen,
-        req
-      );
+      const usuarioId = usuarioDelToken(almacen, req);
 
       if (usuarioId === null) {
-        return responder({
-          estado: 401,
-          cuerpo: {
-            mensaje: "No autorizado",
-          },
-        });
+        return responderError(
+          401,
+          "Token ausente, inválido o vencido"
+        );
       }
 
       const cuerpo = await leerJson(req);
 
       if (cuerpo === null) {
-        return responder({
-          estado: 400,
-          cuerpo: {
-            mensaje: "JSON inválido",
-          },
-        });
+        return responderError(400, "JSON inválido");
       }
 
       return responder(
-        rutasProtegidas[clave](
-          cuerpo,
-          usuarioId
-        )
+        rutasProtegidas[clave](cuerpo, usuarioId)
       );
     }
 
-    // ------------------------------------------------
-    // RUTA NO ENCONTRADA
-    // ------------------------------------------------
-
-    return responder({
-      estado: 404,
-      cuerpo: {
-        mensaje: "Recurso inexistente",
-      },
-    });
+    return responderError(404, "Recurso inexistente");
   });
 
-  // Permite que Cucumber consulte el almacén
-  // durante las pruebas automatizadas.
   servidor.almacen = almacen;
 
   return servidor;
