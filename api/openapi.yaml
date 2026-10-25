@@ -1,0 +1,503 @@
+
+openapi: 3.0.3
+
+info:
+  title: API REST PUKAY
+  version: 0.2.0
+  description: |
+    Contrato OpenAPI del proyecto PUKAY.
+    Aplicacion Android de seguimiento deportivo.
+    Backend desarrollado en PHP y MySQL.
+
+    Incluye autenticacion, registro, consulta,
+    actualizacion y eliminacion de actividades.
+
+    Historia relacionada: HU-001.
+    Criterios: CA-01, CA-02 y CA-03.
+
+servers:
+  - url: http://localhost/pukay_api
+    description: Servidor local XAMPP para desarrollo
+
+tags:
+  - name: Autenticacion
+    description: Inicio de sesion de deportistas
+  - name: Actividades
+    description: Gestion de actividades deportivas
+
+paths:
+
+  /login.php:
+    post:
+      tags:
+        - Autenticacion
+      summary: Iniciar sesion
+      description: |
+        Valida las credenciales del deportista.
+        Devuelve un token con vigencia de 24 horas.
+      operationId: iniciarSesion
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            example:
+              correo: prueba@example.com
+              contrasena: clave_de_ejemplo
+      responses:
+        '200':
+          description: Inicio de sesion correcto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              example:
+                estado: ok
+                mensaje: Inicio de sesión correcto
+                token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                usuario:
+                  id: 1
+                  nombre: Usuario de prueba
+                  correo: prueba@example.com
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Correo o contraseña incorrectos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                estado: error
+                mensaje: Correo o contraseña incorrectos
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /registrar_actividad.php:
+    post:
+      tags:
+        - Actividades
+      summary: Registrar actividad deportiva
+      description: |
+        Registra una actividad para el usuario autenticado.
+        HU-001, CA-01, CA-02 y CA-03.
+        La fecha debe ser valida y no futura.
+        La duracion debe ser mayor que cero.
+        La distancia no puede ser negativa.
+      operationId: registrarActividad
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActividadRequest'
+            example:
+              deporte: Running
+              fecha: '2026-10-24'
+              duracion: 45
+              distancia: 5
+              observacion: Entrenamiento matutino
+      responses:
+        '201':
+          description: Actividad registrada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistroResponse'
+              example:
+                estado: ok
+                mensaje: Actividad registrada correctamente
+                id_actividad: 1
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /listar_actividades.php:
+    get:
+      tags:
+        - Actividades
+      summary: Consultar historial deportivo
+      description: |
+        Obtiene las actividades del usuario autenticado.
+        Los resultados se ordenan por fecha e ID
+        de forma descendente.
+      operationId: listarActividades
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Actividades obtenidas correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListaActividadesResponse'
+              example:
+                estado: ok
+                mensaje: Actividades obtenidas correctamente
+                actividades:
+                  - id: 1
+                    deporte: Running
+                    fecha: '2026-10-24'
+                    duracion: 45
+                    distancia: 5
+                    observacion: Entrenamiento matutino
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /actualizar_actividad.php:
+    post:
+      tags:
+        - Actividades
+      summary: Actualizar actividad deportiva
+      description: |
+        Modifica una actividad del usuario autenticado.
+        Solo permite actualizar actividades propias.
+      operationId: actualizarActividad
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActualizarActividadRequest'
+            example:
+              id_actividad: 1
+              deporte: Running
+              fecha: '2026-10-24'
+              duracion: 60
+              distancia: 8.5
+              observacion: Entrenamiento actualizado
+      responses:
+        '200':
+          description: Actividad actualizada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstadoResponse'
+              example:
+                estado: ok
+                mensaje: Actividad actualizada correctamente
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Actividad no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                estado: error
+                mensaje: Actividad no encontrada
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /eliminar_actividad.php:
+    post:
+      tags:
+        - Actividades
+      summary: Eliminar actividad deportiva
+      description: |
+        Elimina una actividad perteneciente
+        al usuario autenticado.
+      operationId: eliminarActividad
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EliminarActividadRequest'
+            example:
+              id_actividad: 1
+      responses:
+        '200':
+          description: Actividad eliminada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EstadoResponse'
+              example:
+                estado: ok
+                mensaje: Actividad eliminada correctamente
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: Actividad no encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                estado: error
+                mensaje: Actividad no encontrada
+        '405':
+          $ref: '#/components/responses/MethodNotAllowed'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+components:
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Token hexadecimal
+      description: |
+        Token de 64 caracteres hexadecimales.
+        Se obtiene mediante login.php.
+        Debe enviarse en Authorization como Bearer.
+
+  schemas:
+
+    LoginRequest:
+      type: object
+      required:
+        - correo
+        - contrasena
+      properties:
+        correo:
+          type: string
+          format: email
+          example: prueba@example.com
+        contrasena:
+          type: string
+          minLength: 1
+          format: password
+          writeOnly: true
+
+    Usuario:
+      type: object
+      required:
+        - id
+        - nombre
+        - correo
+      properties:
+        id:
+          type: integer
+          example: 1
+        nombre:
+          type: string
+          example: Usuario de prueba
+        correo:
+          type: string
+          format: email
+
+    LoginResponse:
+      type: object
+      required:
+        - estado
+        - mensaje
+        - token
+        - usuario
+      properties:
+        estado:
+          type: string
+          enum:
+            - ok
+        mensaje:
+          type: string
+        token:
+          type: string
+          pattern: '^[a-f0-9]{64}$'
+          description: Token generado al iniciar sesion
+        usuario:
+          $ref: '#/components/schemas/Usuario'
+
+    ActividadRequest:
+      type: object
+      required:
+        - deporte
+        - fecha
+        - duracion
+      properties:
+        deporte:
+          type: string
+          enum:
+            - Running
+            - Caminata
+            - Ciclismo
+            - Fútbol
+            - Gimnasio
+            - Natación
+        fecha:
+          type: string
+          format: date
+          description: Fecha valida no futura
+          example: '2026-10-24'
+        duracion:
+          type: integer
+          minimum: 1
+          description: Duracion en minutos
+        distancia:
+          type: number
+          format: double
+          minimum: 0
+          default: 0
+          description: Distancia en kilometros
+        observacion:
+          type: string
+          default: ''
+          description: Observacion opcional
+
+    ActualizarActividadRequest:
+      allOf:
+        - $ref: '#/components/schemas/ActividadRequest'
+        - type: object
+          required:
+            - id_actividad
+          properties:
+            id_actividad:
+              type: integer
+              minimum: 1
+
+    EliminarActividadRequest:
+      type: object
+      required:
+        - id_actividad
+      properties:
+        id_actividad:
+          type: integer
+          minimum: 1
+
+    Actividad:
+      type: object
+      properties:
+        id:
+          type: integer
+        deporte:
+          type: string
+        fecha:
+          type: string
+          format: date
+        duracion:
+          type: integer
+        distancia:
+          type: number
+          format: double
+        observacion:
+          type: string
+
+    RegistroResponse:
+      type: object
+      required:
+        - estado
+        - mensaje
+        - id_actividad
+      properties:
+        estado:
+          type: string
+          enum:
+            - ok
+        mensaje:
+          type: string
+        id_actividad:
+          type: integer
+
+    EstadoResponse:
+      type: object
+      required:
+        - estado
+        - mensaje
+      properties:
+        estado:
+          type: string
+          enum:
+            - ok
+        mensaje:
+          type: string
+
+    ErrorResponse:
+      type: object
+      required:
+        - estado
+        - mensaje
+      properties:
+        estado:
+          type: string
+          enum:
+            - error
+        mensaje:
+          type: string
+
+    ListaActividadesResponse:
+      type: object
+      required:
+        - estado
+        - mensaje
+        - actividades
+      properties:
+        estado:
+          type: string
+          enum:
+            - ok
+        mensaje:
+          type: string
+        actividades:
+          type: array
+          items:
+            $ref: '#/components/schemas/Actividad'
+
+  responses:
+
+    BadRequest:
+      description: Solicitud con datos invalidos
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            estado: error
+            mensaje: Datos inválidos
+
+    Unauthorized:
+      description: Token ausente, invalido o expirado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            estado: error
+            mensaje: Token de autenticación requerido
+
+    MethodNotAllowed:
+      description: Metodo HTTP no permitido
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            estado: error
+            mensaje: Método no permitido
+
+    InternalError:
+      description: Error interno del servidor
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            estado: error
+            mensaje: Error interno del servidor
