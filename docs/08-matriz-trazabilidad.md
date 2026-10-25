@@ -24,33 +24,37 @@ El esqueleto Node.js constituye un prototipo de apoyo para la actividad académi
 
 | ID de historia | Funcionalidad | Criterio de aceptación | Servicio relacionado | Escenario o archivo de prueba | Estado de trazabilidad |
 |---|---|---|---|---|---|
-| HU-001 | Registrar actividad deportiva | CA-01: Registro exitoso | POST /registrar_actividad.php | Escenario de registro con datos válidos; correspondencia exacta por verificar | Parcial |
-| HU-001 | Registrar actividad deportiva | CA-02: Rechazo de datos inválidos | POST /registrar_actividad.php | Escenario de duración o distancia inválida; correspondencia exacta por verificar | Parcial |
-| HU-001 | Registrar actividad deportiva | CA-03: Campos obligatorios | POST /registrar_actividad.php | Escenario de campos vacíos; correspondencia exacta por verificar | Parcial |
-| HU-002 (provisional) | Registro de usuario | Por verificar en la historia correspondiente | Servicio de registro; ruta por confirmar | `hu1-registro.feature` | Parcial |
-| HU-003 (provisional) | Inicio de sesión | Por verificar en la historia correspondiente | POST /login.php | `hu2-inicio-sesion.feature` | Parcial |
-| HU-004 (provisional) | Consulta de deportes | Por verificar en la historia correspondiente | Componente o servicio por confirmar | `hu3-deportes.feature` | Parcial |
-| HU-005 (provisional) | Consulta del historial | Por verificar en la historia correspondiente | GET /listar_actividades.php | `hu5-historial.feature` | Parcial |
-| Por confirmar | Actualización de actividad | Por verificar en el archivo Gherkin | POST /actualizar_actividad.php | `hu6-gestion-actividades-openapi.feature` | Parcial |
-| Por confirmar | Eliminación de actividad | Por verificar en el archivo Gherkin | POST /eliminar_actividad.php | `hu6-gestion-actividades-openapi.feature` | Parcial |
+| HU-001 / HU4 | Registro de actividades | CA-01 / CA9: registro exitoso | POST /registrar_actividad.php; equivalente funcional `/api/actividades` | CP09 en `hu4-registrar-actividad.feature` | Verificado en prototipo Node.js |
+| HU-001 / HU4 | Registro de actividades | CA-02 / CA11: rechazo de duración y distancia negativas | POST /registrar_actividad.php; equivalente funcional `/api/actividades` | CP17 en `hu4-registrar-actividad.feature` | Verificado en prototipo Node.js |
+| HU-001 / HU4 | Registro de actividades | CA-03 / CA10: duración obligatoria | POST /registrar_actividad.php; equivalente funcional `/api/actividades` | CP10 en `hu4-registrar-actividad.feature` | Verificado en prototipo Node.js |
+| HU-002 (provisional) / HU1 | Registro de usuario | Por verificar en la historia correspondiente | Servicio de registro; ruta por confirmar | `hu1-registro.feature` | Parcial |
+| HU-003 (provisional) / HU2 | Inicio de sesión | Por verificar en la historia correspondiente | POST /login.php | `hu2-inicio-sesion.feature` | Parcial |
+| HU-004 (provisional) / HU3 | Consulta de deportes | Por verificar en la historia correspondiente | Componente o servicio por confirmar | `hu3-deportes.feature` | Parcial |
+| HU-005 (provisional) / HU5 | Consulta del historial | Por verificar en la historia correspondiente | GET /listar_actividades.php | `hu5-historial.feature` | Parcial |
+| HU6 | Actualización de actividad propia | CP13: actualización autorizada | POST /actualizar_actividad.php | CP13 en `hu6-gestion-actividades-openapi.feature` | Verificado en funciones del prototipo Node.js |
+| HU6 | Rechazo de actualización ajena | CP14: protección de actividades de otros usuarios | POST /actualizar_actividad.php | CP14 en `hu6-gestion-actividades-openapi.feature` | Verificado en funciones del prototipo Node.js |
+| HU6 | Eliminación de actividad propia | CP15: eliminación autorizada | POST /eliminar_actividad.php | CP15 en `hu6-gestion-actividades-openapi.feature` | Verificado en funciones del prototipo Node.js |
+| HU6 | Rechazo de eliminación ajena | CP16: protección de actividades de otros usuarios | POST /eliminar_actividad.php | CP16 en `hu6-gestion-actividades-openapi.feature` | Verificado en funciones del prototipo Node.js |
 
-**Nota 1:** Los identificadores HU-002 a HU-005 se conservan provisionalmente porque la numeración documental todavía debe contrastarse con los archivos Gherkin.
+**Nota 1:** HU-001 es el identificador utilizado en `docs/07-historias-y-criterios.md`, mientras que HU4 es la etiqueta utilizada en el archivo Gherkin de registro de actividades. Se documenta su equivalencia funcional sin renombrar los identificadores originales.
 
-**Nota 2:** La relación entre un servicio PHP y un escenario del prototipo Node.js representa una correspondencia funcional prevista. No demuestra que el escenario haya ejecutado una solicitud HTTP contra el backend PHP.
+**Nota 2:** Los identificadores HU-002 a HU-005 se conservan provisionalmente hasta contrastarlos con las historias y criterios originales.
 
-**Nota 3:** La presencia de un archivo `.feature` no garantiza que todos los criterios de aceptación estén cubiertos. La cobertura debe comprobarse revisando sus escenarios y definiciones de pasos.
+**Nota 3:** Las etiquetas CA9, CA10 y CA11 corresponden a los escenarios de `hu4-registrar-actividad.feature`. Las equivalencias con CA-01, CA-02 y CA-03 se establecen por su comportamiento funcional.
+
+**Nota 4:** La relación entre un endpoint PHP y una prueba del prototipo Node.js no significa que dicha prueba haya ejecutado solicitudes contra el backend PHP/MySQL.
 
 ## 4. Contrato OpenAPI y operaciones documentadas
 
-El archivo `api/openapi.yaml` contiene cinco operaciones que fueron visualizadas mediante Swagger Editor.
+El archivo `api/openapi.yaml` contiene cinco operaciones visualizadas mediante Swagger Editor.
 
-| ID | Operación | Finalidad |
-|---|---|---|
-| API-01 | POST /login.php | Autenticación de usuario |
-| API-02 | POST /registrar_actividad.php | Registro de actividad deportiva |
-| API-03 | GET /listar_actividades.php | Consulta de actividades |
-| API-04 | POST /actualizar_actividad.php | Actualización de actividad |
-| API-05 | POST /eliminar_actividad.php | Eliminación de actividad |
+| ID | Operación | Finalidad | Relación funcional |
+|---|---|---|---|
+| API-01 | POST /login.php | Autenticación de usuario | HU2 |
+| API-02 | POST /registrar_actividad.php | Registro de actividad deportiva | HU-001 / HU4 |
+| API-03 | GET /listar_actividades.php | Consulta de actividades | HU5 |
+| API-04 | POST /actualizar_actividad.php | Actualización de actividad | HU6 |
+| API-05 | POST /eliminar_actividad.php | Eliminación de actividad | HU6 |
 
 Estas operaciones constituyen referencias del contrato OpenAPI. Su presencia en el contrato no equivale a una prueba de integración satisfactoria contra el servidor PHP/MySQL.
 
@@ -98,17 +102,35 @@ Se ejecutaron pruebas automatizadas mediante Cucumber sobre el prototipo Node.js
 
 `npm.cmd test`
 
-**Resultado de la ejecución más reciente comunicada:**
+**Resultado de la ejecución más reciente:**
 
-- Escenarios ejecutados: 16.
-- Escenarios aprobados: 16.
-- Escenarios fallidos: 0.
+| Indicador | Resultado |
+|---|---:|
+| Escenarios ejecutados | 17 |
+| Escenarios aprobados | 17 |
+| Escenarios fallidos | 0 |
+| Pasos ejecutados | 96 |
+| Pasos aprobados | 96 |
+| Pasos fallidos | 0 |
+| Tiempo de ejecución | 1,284 segundos |
 
-El registro anterior documentaba 12 escenarios y 68 pasos aprobados. Posteriormente se amplió la suite a 16 escenarios.
+**Salida confirmada:**
 
-Por este motivo, el número de 68 pasos no se presenta como resultado actualizado: debe confirmarse mediante la salida de la última ejecución.
+```text
+17 scenarios (17 passed)
+96 steps (96 passed)
+0m 1.284s (0m 1.205s executing your code)
+```
 
-Los escenarios de actualización y eliminación incorporados al prototipo verifican funciones de servicio. No constituyen, por sí mismos, pruebas de integración HTTP contra el backend PHP/MySQL.
+La suite anterior contenía 16 escenarios aprobados. Se incorporó CP17 para comprobar el rechazo de una actividad con duración de -10 minutos y distancia de -5 kilómetros.
+
+La ejecución actual confirma que CP17 y los demás escenarios finalizaron satisfactoriamente.
+
+**Alcance de la prueba:**
+
+Los escenarios de registro se ejecutan contra las rutas HTTP del servidor de prueba Node.js, como `/api/actividades`.
+
+Los escenarios de actualización y eliminación comprueban funciones del prototipo. No constituyen, por sí mismos, pruebas de integración HTTP contra el backend PHP/MySQL.
 
 ### 6.3. Análisis estático ESLint
 
@@ -118,9 +140,19 @@ Se ejecutó el análisis estático del código JavaScript.
 
 `npm.cmd run lint`
 
-**Resultado:** ejecución finalizada sin errores reportados.
+**Resultado:** ejecución finalizada sin errores reportados en la verificación anterior.
 
 Esta comprobación corresponde al código JavaScript del prototipo y no representa un análisis estático del código Java o PHP de PUKAY.
+
+### 6.4. Cobertura confirmada del registro de actividades
+
+| Criterio documental | Etiqueta Gherkin | Prueba | Comportamiento esperado | Resultado |
+|---|---|---|---|---|
+| CA-01: Registro exitoso | CA9 | CP09 | HTTP 201 y actividad visible en historial | Aprobado |
+| CA-02: Rechazo de datos inválidos | CA11 | CP17 | HTTP 400 y ninguna actividad registrada | Aprobado |
+| CA-03: Campos obligatorios | CA10 | CP10 | HTTP 400 y ninguna actividad registrada | Aprobado |
+
+La cobertura indicada corresponde al comportamiento comprobado en el prototipo Node.js.
 
 ## 7. Relación con los artefactos de la cadena CASE
 
@@ -139,25 +171,28 @@ Esta comprobación corresponde al código JavaScript del prototipo y no represen
 
 ## 8. Pendientes de verificación
 
-Para completar la trazabilidad se requiere:
+Para completar la trazabilidad general del proyecto se requiere:
 
-1. Unificar los identificadores de historias de usuario entre la documentación y los archivos Gherkin.
-2. Revisar el contenido exacto de cada archivo `.feature`.
-3. Asociar cada criterio de aceptación con uno o varios escenarios identificables.
-4. Confirmar las diferencias entre las rutas del prototipo Node.js y los endpoints PHP.
-5. Registrar la salida actualizada de Cucumber, incluyendo el número de pasos.
-6. Confirmar la existencia y ubicación de las evidencias finales.
-7. Realizar pruebas de integración HTTP y del backend PHP/MySQL cuando corresponda al alcance de la implementación.
+1. Unificar o documentar las equivalencias entre los identificadores de historias de usuario del dossier y los archivos Gherkin.
+2. Revisar los criterios de aceptación de HU1, HU2, HU3 y HU5.
+3. Confirmar la correspondencia entre los servicios del prototipo Node.js y los endpoints PHP.
+4. Incorporar al repositorio las evidencias de ejecución que correspondan.
+5. Confirmar la existencia y ubicación del documento HTML generado mediante Redocly.
+6. Realizar pruebas de integración contra el backend PHP/MySQL cuando corresponda al alcance de la implementación.
 
 ## 9. Conclusión
 
-La matriz de trazabilidad permite relacionar los requisitos funcionales de PUKAY con el contrato OpenAPI y las pruebas del prototipo Node.js.
+La matriz de trazabilidad relaciona los requisitos funcionales de PUKAY con el contrato OpenAPI y las pruebas del prototipo Node.js.
 
-Las verificaciones realizadas muestran resultados satisfactorios en el alcance evaluado: cinco operaciones visualizadas en Swagger Editor, validación de Spectral sin errores de severidad `error`, 16 escenarios aprobados en Cucumber y análisis ESLint sin errores.
+Se confirmó la correspondencia funcional de los tres criterios de aceptación del registro de actividades con los escenarios CP09, CP10 y CP17.
 
-No obstante, todavía existen relaciones que deben confirmarse mediante la revisión de los archivos Gherkin y sus definiciones de pasos.
+La última ejecución de Cucumber finalizó con **17 escenarios aprobados, 96 pasos aprobados y ningún fallo**.
 
-Por ello, la trazabilidad se considera parcialmente verificada. Esta distinción permite evitar afirmaciones no respaldadas por evidencias y facilita el cierre de los artefactos de la Semana 2.
+Adicionalmente, se visualizaron cinco operaciones en Swagger Editor, se validó el contrato con Spectral sin errores de severidad `error` y se ejecutó ESLint sin errores en la verificación anterior.
+
+Estos resultados constituyen evidencia del funcionamiento de la cadena CASE dentro del alcance evaluado. No sustituyen las pruebas de integración del backend PHP/MySQL ni de la aplicación Android.
+
+La trazabilidad del registro de actividades se encuentra verificada en el prototipo Node.js. Las restantes relaciones documentales e integraciones requieren las comprobaciones señaladas en este documento.
 
 ---
 
