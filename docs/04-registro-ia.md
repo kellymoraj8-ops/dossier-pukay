@@ -42,13 +42,34 @@ El propósito de este registro es documentar las actividades realizadas con apoy
 | Elemento | Descripción |
 |---|---|
 | **Herramienta** | ChatGPT, desarrollado por OpenAI. |
-| **Modelo o versión** | Registrar el modelo utilizado durante la elaboración del trabajo. |
+| **Modelo o versión** | GPT-4. |
 | **Finalidad** | Apoyo en la redacción, revisión crítica, organización documental y generación de borradores de diagramas y decisiones arquitectónicas. |
 | **Aplicación** | Partes I, II y III del dossier de arquitectura de software de PUKAY. |
 | **Responsabilidad** | El equipo de desarrollo es responsable de revisar, validar y aprobar el contenido incorporado al dossier. |
 
 ---
 
+---
+
+## Semana 2: Cadena CASE
+
+### Herramienta utilizada
+- **Herramienta:** Claude (Anthropic).
+- **Modelo o versión:** Claude 3.5 Sonnet.
+- **Finalidad:** Generación de la estructura del repositorio (package.json, carpetas src y tests), borradores de pruebas Gherkin y adaptación del contrato OpenAPI a la API real en PHP.
+
+### Actividades realizadas
+| N.° | Actividad | Verificación realizada | Aceptado, modificado o rechazado |
+| :--- | :--- | :--- | :--- |
+| 1 | Estructura del repositorio (package.json, src, tests) | Se ejecutó `npm install` para verificar que las dependencias se instalaran correctamente en el entorno local. | **Aceptado:** La estructura de carpetas y el archivo package.json. |
+| 2 | Contrato OpenAPI (openapi.yaml) | Se ejecutó `npm run lint:api` (Spectral) para validar la sintaxis. Además, se contrastaron las rutas propuestas por la IA con las rutas reales de la API en PHP. | **Modificado:** Las rutas iniciales eran genéricas (`/api/auth/login`), pero se cambiaron a las rutas reales de la API (`/login.php`, `/registrar_actividad.php`). |
+| 3 | Pruebas BDD (Cucumber) | Se ejecutó `npm test`. Se aplicó una prueba de mutación (romper el código a propósito) para verificar que las pruebas detectaran el error. | **Aceptado:** Los escenarios Gherkin. **Modificado:** Se agregaron validaciones para campos numéricos (duración > 0). |
+| 4 | Mock con Prism | Se ejecutó `npx prism mock api/openapi.yaml` y se probaron las rutas con PowerShell. | **Aceptado:** El mock respondió correctamente con los códigos 200 y 400 esperados. |
+
+### Nota de verificación crítica
+No se ingresaron datos personales ni contraseñas reales en las herramientas de IA. Toda la evidencia (archivos de texto en la carpeta `evidencias/` y capturas de pantalla) corresponde a ejecuciones reales en la computadora del equipo, verificables en el repositorio de GitHub.
+
+---
 ## Conclusión
 
 El uso de inteligencia artificial permitió apoyar la elaboración y revisión de la documentación arquitectónica de PUKAY, especialmente en la identificación de inconsistencias, la organización de información y la formulación de propuestas de mejora.
