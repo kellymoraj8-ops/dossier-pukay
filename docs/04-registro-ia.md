@@ -3,11 +3,13 @@
 
 ## Introducción
 
-Durante la elaboración del dossier de arquitectura de software de PUKAY, se utilizó inteligencia artificial como herramienta de apoyo para la revisión, organización y mejora de la documentación.
+Durante la elaboración del dossier de arquitectura de software y de la cadena CASE de PUKAY, se utilizó inteligencia artificial como herramienta de apoyo para la revisión, organización y mejora de la documentación, así como para la elaboración y corrección de determinados artefactos técnicos.
 
-Las propuestas generadas por la IA fueron sometidas a un proceso de revisión y contraste con el informe original del proyecto, las decisiones arquitectónicas y los criterios establecidos por el equipo de desarrollo.
+Las propuestas generadas por la IA fueron sometidas a un proceso de revisión y contraste con el informe original del proyecto, las decisiones arquitectónicas, los criterios establecidos por el equipo de desarrollo y los resultados de las verificaciones realizadas.
 
-El propósito de este registro es documentar las actividades realizadas con apoyo de IA, las verificaciones correspondientes y las decisiones de aceptación, modificación o rechazo.
+El propósito de este registro es documentar las actividades realizadas con apoyo de IA, las herramientas utilizadas, las salidas obtenidas, los defectos identificados, las verificaciones correspondientes y las decisiones de aceptación, modificación o rechazo.
+
+La responsabilidad de aprobar e incorporar los resultados corresponde al equipo de desarrollo de PUKAY.
 
 ---
 
@@ -42,20 +44,73 @@ El propósito de este registro es documentar las actividades realizadas con apoy
 | Elemento | Descripción |
 |---|---|
 | **Herramienta** | ChatGPT, desarrollado por OpenAI. |
-| **Modelo o versión** | Registrar el modelo utilizado durante la elaboración del trabajo. |
-| **Finalidad** | Apoyo en la redacción, revisión crítica, organización documental y generación de borradores de diagramas y decisiones arquitectónicas. |
-| **Aplicación** | Partes I, II y III del dossier de arquitectura de software de PUKAY. |
-| **Responsabilidad** | El equipo de desarrollo es responsable de revisar, validar y aprobar el contenido incorporado al dossier. |
+| **Modelo o versión** | GPT-6 para las actividades documentadas de la Semana 2. Las versiones utilizadas en las sesiones anteriores del dossier no están documentadas. |
+| **Finalidad** | Apoyo en la redacción, revisión crítica, organización documental, elaboración de criterios Gherkin, corrección de artefactos técnicos y generación de borradores de diagramas y decisiones arquitectónicas. |
+| **Aplicación** | Partes I, II y III del dossier de arquitectura de software y artefactos de la cadena CASE de PUKAY. |
+| **Responsabilidad** | El equipo de desarrollo es responsable de revisar, validar y aprobar el contenido incorporado al proyecto. |
+| **Control de resultados** | Revisión documental, contraste con requisitos y ejecución de herramientas de verificación cuando corresponde. |
+
+---
+
+## Registro adicional de IA — Actividad Autónoma Semana 2
+
+Esta sección documenta el uso de inteligencia artificial durante la elaboración y verificación de los artefactos correspondientes a la cadena CASE.
+
+Los resultados se contrastaron mediante revisión documental, validación del contrato OpenAPI y ejecución de pruebas automatizadas.
+
+### Tabla 36. Uso y Verificación de IA en la Cadena CASE
+
+| ID | Herramienta y versión | Prompt resumido | Salida obtenida | Defectos o limitaciones | Decisión | Verificación |
+|---|---|---|---|---|---|---|
+| IA-S2-01 | ChatGPT (GPT-6) | Generar una historia de usuario para el registro de actividades deportivas de PUKAY, con criterios Gherkin para registro exitoso y datos inválidos. | Propuesta de historia de usuario y criterios de aceptación. | No contemplaba todos los campos, validaciones obligatorias ni la relación completa con la arquitectura. | **Modificado** | Revisión de HU-001 y CA-01 a CA-03 en `docs/07-historias-y-criterios.md`. Correspondencia funcional completa pendiente de comprobar. |
+| IA-S2-02 | ChatGPT (GPT-6) | Apoyar la revisión y corrección de escenarios Gherkin y definiciones de pasos para operaciones de actualización y eliminación de actividades. | Propuestas de ajustes para escenarios y funciones del prototipo Node.js. | Se identificaron definiciones duplicadas y problemas de correspondencia entre pasos y funciones. | **Modificado** | Ejecución de `npm.cmd test`: 16 escenarios aprobados. |
+| IA-S2-03 | ChatGPT (GPT-6) | Revisar el mapa de toolchain y documentar las pruebas de ChatGPT, Swagger Editor y Cucumber. | Actualización de `docs/06-mapa-toolchain.md`. | Fue necesario distinguir las pruebas realmente ejecutadas de las que estaban pendientes. | **Modificado** | Revisión del mapa; comprobación de cinco operaciones en Swagger Editor y ejecución de Cucumber. |
+| IA-S2-04 | ChatGPT (GPT-6) | Identificar y corregir el problema de configuración presentado durante la validación del contrato OpenAPI con Spectral. | Propuesta de configuración de `.spectral.yaml`. | La primera ejecución de Spectral no encontró un conjunto de reglas. | **Aceptado después de verificar** | Ejecución de Spectral con resultado `No results with a severity of 'error' found!`. |
+| IA-S2-05 | ChatGPT (GPT-6) | Elaborar una matriz de evaluación y selección de herramientas CASE con criterios ponderados y resultados observables. | Matriz de ChatGPT, Swagger Editor y Cucumber. | Se detectó una inconsistencia inicial en el cálculo ponderado de Cucumber. | **Modificado** | Revisión aritmética: ChatGPT 72 %, Swagger Editor 90 % y Cucumber 92 %. |
+
+*Nota. Los resultados de ejecución corresponden a verificaciones del prototipo Node.js y del contrato OpenAPI. No deben interpretarse como pruebas completas del backend PHP/MySQL.*
+
+### Tabla 37. Evidencias de Verificación de Artefactos
+
+| Artefacto | Método de verificación | Resultado |
+|---|---|---|
+| `docs/07-historias-y-criterios.md` | Revisión documental de historias y criterios Gherkin | HU-001 y criterios documentados; trazabilidad completa pendiente |
+| `api/openapi.yaml` | Visualización mediante Swagger Editor | Cinco operaciones visibles |
+| `api/openapi.yaml` | Validación mediante Spectral | Sin errores de severidad `error` |
+| `src/` y `tests/` | Ejecución de Cucumber | 16 escenarios aprobados |
+| Código JavaScript del prototipo | Ejecución de ESLint | Sin errores |
+| `docs/06-mapa-toolchain.md` | Contraste con los requisitos de la rúbrica | Mapa, priorización y tres pruebas documentadas |
+| `docs/09-matriz-evaluacion-case.md` | Comprobación de pesos y operaciones aritméticas | Pesos: 100 %; resultados: 72 %, 90 % y 92 % |
+
+### Evaluación crítica de los resultados generados
+
+El uso de ChatGPT contribuyó a organizar y corregir los artefactos de la cadena CASE de PUKAY. Sin embargo, sus propuestas no fueron aceptadas automáticamente.
+
+Durante el trabajo se identificaron omisiones en criterios de aceptación, problemas de correspondencia entre pasos Gherkin y funciones, y una inconsistencia en el cálculo de la matriz de evaluación.
+
+Estas situaciones evidencian la necesidad de aplicar revisión humana y comprobaciones independientes.
+
+Las verificaciones con Spectral, Cucumber y ESLint proporcionaron evidencia técnica sobre los artefactos evaluados, dentro del alcance específico de cada herramienta.
+
+El equipo mantiene la responsabilidad de aceptar, modificar o rechazar las propuestas generadas por inteligencia artificial.
 
 ---
 
 ## Conclusión
 
-El uso de inteligencia artificial permitió apoyar la elaboración y revisión de la documentación arquitectónica de PUKAY, especialmente en la identificación de inconsistencias, la organización de información y la formulación de propuestas de mejora.
+El uso de inteligencia artificial permitió apoyar la elaboración y revisión de la documentación arquitectónica y de los artefactos de la cadena CASE de PUKAY.
 
-Las respuestas generadas por la IA no fueron consideradas automáticamente como definitivas. El equipo realizó un proceso de contraste con el informe original y tomó decisiones sobre qué propuestas aceptar, modificar o rechazar.
+En el dossier arquitectónico, la IA contribuyó a identificar inconsistencias, organizar información y formular propuestas de mejora.
 
-De esta manera, la inteligencia artificial se utilizó como una herramienta complementaria de apoyo académico, manteniendo la responsabilidad de las decisiones arquitectónicas en el equipo de desarrollo.
+Durante la Semana 2, también se utilizó como apoyo para elaborar criterios de aceptación, corregir artefactos de pruebas, actualizar el mapa de toolchain y construir la matriz de evaluación y selección de herramientas CASE.
+
+Las respuestas generadas por la IA no fueron consideradas automáticamente definitivas. El equipo contrastó las propuestas con el informe original, los requisitos del proyecto y los resultados de las verificaciones disponibles.
+
+La ejecución de Cucumber permitió comprobar 16 escenarios de aceptación del prototipo Node.js. Spectral permitió validar el contrato OpenAPI sin errores de severidad `error`, mientras que ESLint permitió revisar el código JavaScript sin errores.
+
+Estas verificaciones aportan evidencia de calidad dentro de su alcance, pero no sustituyen las pruebas completas de integración HTTP ni las verificaciones del backend PHP/MySQL de PUKAY.
+
+De esta manera, la inteligencia artificial se utilizó como herramienta complementaria de apoyo académico y técnico, manteniendo la responsabilidad de las decisiones arquitectónicas y de desarrollo en el equipo.
 
 ---
 
@@ -69,6 +124,8 @@ De esta manera, la inteligencia artificial se utilizó como una herramienta comp
 
 [Consultar las decisiones arquitectónicas](03-adr/ADR-001-persistencia-mysql.md)
 
+[Consultar el mapa de toolchain CASE](06-mapa-toolchain.md)
 
+[Consultar historias y criterios de aceptación](07-historias-y-criterios.md)
 
-
+[Consultar la matriz de evaluación CASE](09-matriz-evaluacion-case.md)
