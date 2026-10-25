@@ -87,7 +87,14 @@ function iniciarSesion(almacen, cuerpo) {
 
   const token = generarToken();
 
-  almacen.sesiones.set(token, usuario.id);
+  // El token tiene una vigencia de 24 horas.
+  const expiraEn = Date.now() + 24 * 60 * 60 * 1000;
+
+  // Guardar el usuario y la fecha de expiración.
+  almacen.sesiones.set(token, {
+    usuarioId: usuario.id,
+    expiraEn,
+  });
 
   return {
     estado: 200,
@@ -227,8 +234,11 @@ function registrarActividadOpenAPI(
   usuarioId,
   cuerpo
 ) {
-  if (!cuerpo || typeof cuerpo !== "object" ||
-      Array.isArray(cuerpo)) {
+  if (
+    !cuerpo ||
+    typeof cuerpo !== "object" ||
+    Array.isArray(cuerpo)
+  ) {
     return errorOpenAPI(400, "Datos inválidos");
   }
 
