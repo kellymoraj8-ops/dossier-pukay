@@ -1,0 +1,9 @@
+﻿
+> pukay-cadena-case@0.2.0 test
+> cucumber-js
+
+....................................................................
+
+12 scenarios (12 passed)
+68 steps (68 passed)
+0m 1.071s (0m 1.030s executing your code)
