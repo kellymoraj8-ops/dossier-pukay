@@ -90,7 +90,6 @@ function iniciarSesion(almacen, cuerpo) {
   // El token tiene una vigencia de 24 horas.
   const expiraEn = Date.now() + 24 * 60 * 60 * 1000;
 
-  // Guardar el usuario y la fecha de expiración.
   almacen.sesiones.set(token, {
     usuarioId: usuario.id,
     expiraEn,
@@ -186,6 +185,96 @@ const equivalenciasDeportes = {
   "Natación": "natación",
 };
 
+// Validar los datos de una actividad según OpenAPI.
+// Se reutiliza en registro y actualización.
+function validarActividadOpenAPI(cuerpo) {
+  if (
+    !cuerpo ||
+    typeof cuerpo !== "object" ||
+    Array.isArray(cuerpo)
+  ) {
+    return {
+      error: "Datos inválidos",
+    };
+  }
+
+  const deporteInterno = equivalenciasDeportes[cuerpo.deporte];
+
+  if (!deporteInterno) {
+    return {
+      error: "Deporte no válido",
+    };
+  }
+
+  if (
+    typeof cuerpo.fecha !== "string" ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(cuerpo.fecha)
+  ) {
+    return {
+      error: "Fecha inválida",
+    };
+  }
+
+  const [anio, mes, dia] = cuerpo.fecha
+    .split("-")
+    .map(Number);
+
+  const fecha = new Date(Date.UTC(anio, mes - 1, dia));
+
+  if (
+    fecha.getUTCFullYear() !== anio ||
+    fecha.getUTCMonth() !== mes - 1 ||
+    fecha.getUTCDate() !== dia ||
+    fecha.getTime() > Date.now()
+  ) {
+    return {
+      error: "Fecha inválida o futura",
+    };
+  }
+
+  if (
+    !Number.isInteger(cuerpo.duracion) ||
+    cuerpo.duracion < 1
+  ) {
+    return {
+      error: "La duración debe ser mayor que cero",
+    };
+  }
+
+  const distancia = cuerpo.distancia === undefined
+    ? 0
+    : cuerpo.distancia;
+
+  if (
+    typeof distancia !== "number" ||
+    !Number.isFinite(distancia) ||
+    distancia < 0
+  ) {
+    return {
+      error: "La distancia no puede ser negativa",
+    };
+  }
+
+  if (
+    cuerpo.observacion !== undefined &&
+    typeof cuerpo.observacion !== "string"
+  ) {
+    return {
+      error: "Observación inválida",
+    };
+  }
+
+  return {
+    datos: {
+      deporte: deporteInterno,
+      fecha: cuerpo.fecha,
+      duracion: cuerpo.duracion,
+      distancia,
+      comentario: cuerpo.observacion ?? "",
+    },
+  };
+}
+
 function iniciarSesionOpenAPI(almacen, cuerpo) {
   if (
     !cuerpo ||
@@ -234,86 +323,16 @@ function registrarActividadOpenAPI(
   usuarioId,
   cuerpo
 ) {
-  if (
-    !cuerpo ||
-    typeof cuerpo !== "object" ||
-    Array.isArray(cuerpo)
-  ) {
-    return errorOpenAPI(400, "Datos inválidos");
+  const validacion = validarActividadOpenAPI(cuerpo);
+
+  if (validacion.error) {
+    return errorOpenAPI(400, validacion.error);
   }
 
-  const deporteInterno = equivalenciasDeportes[cuerpo.deporte];
-
-  if (!deporteInterno) {
-    return errorOpenAPI(400, "Deporte no válido");
-  }
-
-  // El contrato exige una fecha real y no futura.
-  if (
-    typeof cuerpo.fecha !== "string" ||
-    !/^\d{4}-\d{2}-\d{2}$/.test(cuerpo.fecha)
-  ) {
-    return errorOpenAPI(400, "Fecha inválida");
-  }
-
-  const [anio, mes, dia] = cuerpo.fecha
-    .split("-")
-    .map(Number);
-
-  const fecha = new Date(Date.UTC(anio, mes - 1, dia));
-
-  if (
-    fecha.getUTCFullYear() !== anio ||
-    fecha.getUTCMonth() !== mes - 1 ||
-    fecha.getUTCDate() !== dia ||
-    fecha.getTime() > Date.now()
-  ) {
-    return errorOpenAPI(400, "Fecha inválida o futura");
-  }
-
-  if (
-    !Number.isInteger(cuerpo.duracion) ||
-    cuerpo.duracion < 1
-  ) {
-    return errorOpenAPI(
-      400,
-      "La duración debe ser mayor que cero"
-    );
-  }
-
-  const distancia = cuerpo.distancia === undefined
-    ? 0
-    : cuerpo.distancia;
-
-  if (
-    typeof distancia !== "number" ||
-    !Number.isFinite(distancia) ||
-    distancia < 0
-  ) {
-    return errorOpenAPI(
-      400,
-      "La distancia no puede ser negativa"
-    );
-  }
-
-  if (
-    cuerpo.observacion !== undefined &&
-    typeof cuerpo.observacion !== "string"
-  ) {
-    return errorOpenAPI(400, "Observación inválida");
-  }
-
-  // La función original conserva las reglas del prototipo.
   const resultado = registrarActividad(
     almacen,
     usuarioId,
-    {
-      deporte: deporteInterno,
-      fecha: cuerpo.fecha,
-      duracion: cuerpo.duracion,
-      distancia,
-      comentario: cuerpo.observacion ?? "",
-    }
+    validacion.datos
   );
 
   if (resultado.estado !== 201) {
@@ -364,6 +383,64 @@ function listarActividadesOpenAPI(almacen, usuarioId) {
   };
 }
 
+// ----------------------------------------------------
+// ACTUALIZACIÓN DE ACTIVIDADES SEGÚN OPENAPI
+// ----------------------------------------------------
+
+function actualizarActividadOpenAPI(
+  almacen,
+  usuarioId,
+  cuerpo
+) {
+  // Validar identificador de la actividad.
+  if (
+    !cuerpo ||
+    !Number.isInteger(cuerpo.id_actividad) ||
+    cuerpo.id_actividad < 1
+  ) {
+    return errorOpenAPI(
+      400,
+      "Identificador de actividad inválido"
+    );
+  }
+
+  // Buscar únicamente actividades del usuario autenticado.
+  const actividad = almacen.actividades.find(
+    (a) =>
+      a.id === cuerpo.id_actividad &&
+      a.usuarioId === usuarioId
+  );
+
+  if (!actividad) {
+    return errorOpenAPI(
+      404,
+      "Actividad no encontrada"
+    );
+  }
+
+  // Validar todos los datos de la actividad.
+  const validacion = validarActividadOpenAPI(cuerpo);
+
+  if (validacion.error) {
+    return errorOpenAPI(400, validacion.error);
+  }
+
+  // Actualizar los campos permitidos.
+  actividad.deporte = validacion.datos.deporte;
+  actividad.fecha = validacion.datos.fecha;
+  actividad.duracion = validacion.datos.duracion;
+  actividad.distancia = validacion.datos.distancia;
+  actividad.comentario = validacion.datos.comentario;
+
+  return {
+    estado: 200,
+    cuerpo: {
+      estado: "ok",
+      mensaje: "Actividad actualizada correctamente",
+    },
+  };
+}
+
 module.exports = {
   registrarUsuario,
   iniciarSesion,
@@ -373,4 +450,5 @@ module.exports = {
   iniciarSesionOpenAPI,
   registrarActividadOpenAPI,
   listarActividadesOpenAPI,
+  actualizarActividadOpenAPI,
 };
