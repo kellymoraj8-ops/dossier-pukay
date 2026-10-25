@@ -1,0 +1,28 @@
+{
+  "name": "pukay-cadena-case",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Cadena CASE de PUKAY: contrato OpenAPI, esqueleto ejecutable y pruebas derivadas de los criterios de aceptación.",
+  "scripts": {
+    "lint:api": "spectral lint api/openapi.yaml",
+    "lint": "eslint .",
+    "test": "cucumber-js",
+    "mock": "prism mock api/openapi.yaml",
+    "docs": "openapi-generator-cli generate -i api/openapi.yaml -g html2 -o docs/api",
+    "stubs": "openapi-generator-cli generate -i api/openapi.yaml -g nodejs-express-server -o stubs",
+    "start": "node src/iniciar.js",
+    "docs:redoc": "npx @redocly/cli@2.71.0 build-docs api/openapi.yaml -o docs/api/index.html"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@cucumber/cucumber": "^13.3.0",
+    "@eslint/js": "^10.0.1",
+    "@openapitools/openapi-generator-cli": "^2.42.0",
+    "@stoplight/prism-cli": "^5.14.2",
+    "@stoplight/spectral-cli": "^6.17.0",
+    "eslint": "^10.13.0"
+  }
+}
