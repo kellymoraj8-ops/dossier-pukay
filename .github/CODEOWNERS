@@ -1,0 +1,17 @@
+# CODEOWNERS - Proyecto PUKAY
+# Responsables de revision del repositorio
+
+# Configuracion general del proyecto
+* @ohscar04 @aprilgit0408 @kellymoraj8-ops
+
+# Documentacion y arquitectura
+/docs/ @ohscar04 @aprilgit0408 @kellymoraj8-ops
+
+# Contrato y documentacion de la API REST
+/api/ @ohscar04 @kellymoraj8-ops
+
+# Codigo fuente
+/src/ @ohscar04 @aprilgit0408
+
+# Pruebas automatizadas
+/tests/ @aprilgit0408 @kellymoraj8-ops
