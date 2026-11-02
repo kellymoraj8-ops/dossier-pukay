@@ -80,7 +80,7 @@ Los resultados se contrastaron mediante revisión documental, validación del co
 | `src/` y `tests/` | Ejecución de Cucumber | 16 escenarios aprobados |
 | Código JavaScript del prototipo | Ejecución de ESLint | Sin errores |
 | `docs/06-mapa-toolchain.md` | Contraste con los requisitos de la rúbrica | Mapa, priorización y tres pruebas documentadas |
-| `docs/09-matriz-evaluacion-case.md` | Comprobación de pesos y operaciones aritméticas | Pesos: 100 %; resultados: 72 %, 90 % y 92 % |
+| `docs/10-matriz-evaluacion-case.md` | Comprobación de pesos y operaciones aritméticas | Pesos: 100 %; resultados: 72 %, 90 % y 92 % |
 
 ### Evaluación crítica de los resultados generados
 
@@ -117,6 +117,33 @@ El equipo mantiene la responsabilidad de aceptar, modificar o rechazar las propu
 ### Nota de verificación crítica
 No se ingresaron datos personales ni contraseñas reales en las herramientas de IA. Toda la evidencia (archivos de texto en la carpeta `evidencias/` y capturas de pantalla) corresponde a ejecuciones reales en la computadora del equipo, verificables en el repositorio de GitHub.
 
+## Semana 3: Gestión de versiones y colaboración Git
+
+### Herramienta utilizada
+
+- **Herramienta:** ChatGPT (OpenAI).
+- **Modelo:** GPT-6.
+- **Finalidad:** Apoyo en la organización del flujo Git, documentación de decisiones, preparación de evidencias y revisión de criterios de la rúbrica.
+
+### Tabla 38. Registro de uso y contraste de IA — Semana 3
+
+| ID | Actividad | Apoyo proporcionado por IA | Verificación humana | Decisión |
+|---|---|---|---|---|
+| IA-S3-01 | Matriz comparativa Git vs. SVN | Apoyo en la organización de criterios comparativos y justificación de Git. | Revisión del documento y aprobación mediante Pull Request. | Modificado y aceptado |
+| IA-S3-02 | ADR-004 | Apoyo en la redacción de la decisión de utilizar Git para PUKAY. | Revisión del ADR y aprobación por integrantes del equipo. | Modificado y aceptado |
+| IA-S3-03 | Protección de ramas y CODEOWNERS | Orientación sobre reglas de protección, revisiones y responsabilidades. | Comprobación de las configuraciones y pruebas mediante Pull Requests. | Aceptado tras verificar |
+| IA-S3-04 | Conflicto Git | Orientación para crear dos ramas, modificar la misma línea y resolver un conflicto. | GitHub detectó el conflicto en el PR #16; se resolvió manualmente y se integró en `main`. | Aceptado tras verificar |
+| IA-S3-05 | Versionado SemVer | Apoyo en la preparación de las notas de publicación de `v0.3.0`. | Comprobación de la publicación en GitHub Releases. | Modificado y aceptado |
+
+### Evaluación crítica
+
+Las recomendaciones de IA fueron utilizadas como apoyo y no como sustituto de las verificaciones técnicas.
+
+El equipo comprobó los cambios mediante Pull Requests, revisiones cruzadas, reglas de protección de ramas y evidencias registradas en GitHub.
+
+En la prueba de conflicto, la detección y resolución fueron verificadas directamente en GitHub. La publicación de `v0.3.0` también fue comprobada.
+
+La responsabilidad de las decisiones y de la aceptación de los resultados corresponde al equipo de desarrollo de PUKAY.
 ---
 ## Conclusión
 
@@ -150,4 +177,4 @@ De esta manera, la inteligencia artificial se utilizó como herramienta compleme
 
 [Consultar historias y criterios de aceptación](07-historias-y-criterios.md)
 
-[Consultar la matriz de evaluación CASE](09-matriz-evaluacion-case.md)
+[Consultar la matriz de evaluación CASE](10-matriz-evaluacion-case.md)
