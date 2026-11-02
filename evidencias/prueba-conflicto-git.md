@@ -17,4 +17,6 @@ Demostrar un conflicto real de Git al modificar la misma línea desde dos ramas 
 
 ## Resultado
 
-Estado de integración: Cambio realizado por Oscar.
+Estado de integración: Cambios de Oscar y Kelly integrados correctamente.
+
+Resolución: Se conservaron los aportes de ambos integrantes mediante una resolución manual del conflicto Git.
