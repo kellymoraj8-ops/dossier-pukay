@@ -17,4 +17,4 @@ Demostrar un conflicto real de Git al modificar la misma línea desde dos ramas 
 
 ## Resultado
 
-Pendiente de ejecutar la prueba y documentar su resolución.
+Estado de integración: Cambio realizado por Oscar.
