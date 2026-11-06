@@ -75,6 +75,7 @@ function crearServidor(almacen = crearAlmacen()) {
     }
     
     const rutasPublicas = {
+
       "POST /api/auth/registro": (c) =>
         servicios.registrarUsuario(almacen, c),
 
