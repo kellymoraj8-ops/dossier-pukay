@@ -4,14 +4,14 @@
   "private": true,
   "description": "Cadena CASE de PUKAY: contrato OpenAPI, esqueleto ejecutable y pruebas derivadas de los criterios de aceptación.",
   "scripts": {
-    "lint:api": "spectral lint api/openapi.yaml",
+    "lint:api": "spectral lint api/openapi.yaml --fail-severity=warn",
     "lint": "eslint .",
     "test": "cucumber-js",
     "mock": "prism mock api/openapi.yaml",
-    "docs": "openapi-generator-cli generate -i api/openapi.yaml -g html2 -o docs/api",
+    "docs:html": "openapi-generator-cli generate -i api/openapi.yaml -g html2 -o docs/api",
     "stubs": "openapi-generator-cli generate -i api/openapi.yaml -g nodejs-express-server -o stubs",
     "start": "node src/iniciar.js",
-    "docs:redoc": "npx @redocly/cli@2.71.0 build-docs api/openapi.yaml -o docs/api/index.html"
+    "docs": "npx @redocly/cli@2.71.0 build-docs api/openapi.yaml -o docs/api/index.html"
   },
   "engines": {
     "node": ">=18"
