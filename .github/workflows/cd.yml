@@ -2,7 +2,7 @@ name: CD
 
 on:
   workflow_run:
-    workflows: ["CI Pipeline PUKAY"] # Tiene que coincidir exactamente con el "name" del ci.yml
+    workflows: ["CI Pipeline PUKAY"] # Debe coincidir con el 'name' de tu ci.yml
     types:
       - completed
     branches: [main]
