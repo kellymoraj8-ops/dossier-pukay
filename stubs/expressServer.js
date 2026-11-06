@@ -5,6 +5,7 @@ const path = require('path');
 const swaggerUI = require('swagger-ui-express');
 const jsYaml = require('js-yaml');
 const express = require('express');
+const { rateLimit } = require('express-rate-limit');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -16,6 +17,15 @@ class ExpressServer {
   constructor(port, openApiYaml) {
     this.port = port;
     this.app = express();
+this.app.use(rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  message: {
+    error: 'Demasiadas solicitudes. Intente nuevamente más tarde.'
+  }
+}));
     this.openApiPath = openApiYaml;
     try {
       this.schema = jsYaml.safeLoad(fs.readFileSync(openApiYaml));

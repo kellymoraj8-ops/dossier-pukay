@@ -1,5 +1,5 @@
 {
-  "name":  "api-rest-pukay",
+  "name": "api-rest-pukay",
   "version": "0.2.0",
   "description": "Contrato OpenAPI del proyecto PUKAY. Aplicacion Android de seguimiento deportivo. Backend desarrollado en PHP y MySQL.  Incluye autenticacion, registro, consulta, actualizacion y eliminacion de actividades.  Historia relacionada: HU-001. Criterios: CA-01, CA-02 y CA-03. ",
   "main": "index.js",
@@ -20,6 +20,7 @@
     "cors": "^2.8.5",
     "express": "^4.16.4",
     "express-openapi-validator": "^4.13.8",
+    "express-rate-limit": "^8.7.3",
     "js-yaml": "^3.3.0",
     "ono": "^5.0.1",
     "openapi-sampler": "^1.0.0-beta.15",
