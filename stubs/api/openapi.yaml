@@ -1,0 +1,671 @@
+openapi: 3.0.3
+info:
+  contact:
+    name: Equipo de desarrollo PUKAY
+    url: https://github.com/kellymoraj8-ops/dossier-pukay
+  description: |
+    Contrato OpenAPI del proyecto PUKAY.
+    Aplicacion Android de seguimiento deportivo.
+    Backend desarrollado en PHP y MySQL.
+
+    Incluye autenticacion, registro, consulta,
+    actualizacion y eliminacion de actividades.
+
+    Historia relacionada: HU-001.
+    Criterios: CA-01, CA-02 y CA-03.
+  title: API REST PUKAY
+  version: 0.2.0
+servers:
+- description: Servidor local XAMPP para desarrollo
+  url: http://localhost/pukay_api
+tags:
+- description: Inicio de sesion de deportistas
+  name: Autenticacion
+- description: Gestion de actividades deportivas
+  name: Actividades
+paths:
+  /login.php:
+    post:
+      description: |
+        Valida las credenciales del deportista.
+        Devuelve un token con vigencia de 24 horas.
+      operationId: iniciarSesion
+      requestBody:
+        content:
+          application/json:
+            example:
+              correo: prueba@example.com
+              contrasena: clave_de_ejemplo
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                estado: ok
+                mensaje: Inicio de sesión correcto
+                token: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+                usuario:
+                  id: 1
+                  nombre: Usuario de prueba
+                  correo: prueba@example.com
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+          description: Inicio de sesion correcto
+        "400":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Datos inválidos
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Solicitud con datos invalidos
+        "401":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Correo o contraseña incorrectos
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Correo o contraseña incorrectos
+        "405":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Método no permitido
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Metodo HTTP no permitido
+        "500":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Error interno del servidor
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Error interno del servidor
+      security: []
+      summary: Iniciar sesion
+      tags:
+      - Autenticacion
+      x-eov-operation-handler: controllers/AutenticacionController
+  /registrar_actividad.php:
+    post:
+      description: |
+        Registra una actividad para el usuario autenticado.
+        HU-001, CA-01, CA-02 y CA-03.
+        La fecha debe ser valida y no futura.
+        La duracion debe ser mayor que cero.
+        La distancia no puede ser negativa.
+      operationId: registrarActividad
+      requestBody:
+        content:
+          application/json:
+            example:
+              deporte: Running
+              fecha: 2026-10-24
+              duracion: 45
+              distancia: 5
+              observacion: Entrenamiento matutino
+            schema:
+              $ref: "#/components/schemas/ActividadRequest"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              example:
+                estado: ok
+                mensaje: Actividad registrada correctamente
+                id_actividad: 1
+              schema:
+                $ref: "#/components/schemas/RegistroResponse"
+          description: Actividad registrada correctamente
+        "400":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Datos inválidos
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Solicitud con datos invalidos
+        "401":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Token de autenticación requerido
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: "Token ausente, invalido o expirado"
+        "405":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Método no permitido
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Metodo HTTP no permitido
+        "500":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Error interno del servidor
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Error interno del servidor
+      security:
+      - bearerAuth: []
+      summary: Registrar actividad deportiva
+      tags:
+      - Actividades
+      x-eov-operation-handler: controllers/ActividadesController
+  /listar_actividades.php:
+    get:
+      description: |
+        Obtiene las actividades del usuario autenticado.
+        Los resultados se ordenan por fecha e ID
+        de forma descendente.
+      operationId: listarActividades
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                estado: ok
+                mensaje: Actividades obtenidas correctamente
+                actividades:
+                - id: 1
+                  deporte: Running
+                  fecha: 2026-10-24
+                  duracion: 45
+                  distancia: 5
+                  observacion: Entrenamiento matutino
+              schema:
+                $ref: "#/components/schemas/ListaActividadesResponse"
+          description: Actividades obtenidas correctamente
+        "401":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Token de autenticación requerido
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: "Token ausente, invalido o expirado"
+        "405":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Método no permitido
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Metodo HTTP no permitido
+        "500":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Error interno del servidor
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Error interno del servidor
+      security:
+      - bearerAuth: []
+      summary: Consultar historial deportivo
+      tags:
+      - Actividades
+      x-eov-operation-handler: controllers/ActividadesController
+  /actualizar_actividad.php:
+    post:
+      description: |
+        Modifica una actividad del usuario autenticado.
+        Solo permite actualizar actividades propias.
+      operationId: actualizarActividad
+      requestBody:
+        content:
+          application/json:
+            example:
+              id_actividad: 1
+              deporte: Running
+              fecha: 2026-10-24
+              duracion: 60
+              distancia: 8.5
+              observacion: Entrenamiento actualizado
+            schema:
+              $ref: "#/components/schemas/ActualizarActividadRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                estado: ok
+                mensaje: Actividad actualizada correctamente
+              schema:
+                $ref: "#/components/schemas/EstadoResponse"
+          description: Actividad actualizada correctamente
+        "400":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Datos inválidos
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Solicitud con datos invalidos
+        "401":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Token de autenticación requerido
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: "Token ausente, invalido o expirado"
+        "404":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Actividad no encontrada
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Actividad no encontrada
+        "405":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Método no permitido
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Metodo HTTP no permitido
+        "500":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Error interno del servidor
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Error interno del servidor
+      security:
+      - bearerAuth: []
+      summary: Actualizar actividad deportiva
+      tags:
+      - Actividades
+      x-eov-operation-handler: controllers/ActividadesController
+  /eliminar_actividad.php:
+    post:
+      description: |
+        Elimina una actividad perteneciente
+        al usuario autenticado.
+      operationId: eliminarActividad
+      requestBody:
+        content:
+          application/json:
+            example:
+              id_actividad: 1
+            schema:
+              $ref: "#/components/schemas/EliminarActividadRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              example:
+                estado: ok
+                mensaje: Actividad eliminada correctamente
+              schema:
+                $ref: "#/components/schemas/EstadoResponse"
+          description: Actividad eliminada correctamente
+        "400":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Datos inválidos
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Solicitud con datos invalidos
+        "401":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Token de autenticación requerido
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: "Token ausente, invalido o expirado"
+        "404":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Actividad no encontrada
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Actividad no encontrada
+        "405":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Método no permitido
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Metodo HTTP no permitido
+        "500":
+          content:
+            application/json:
+              example:
+                estado: error
+                mensaje: Error interno del servidor
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Error interno del servidor
+      security:
+      - bearerAuth: []
+      summary: Eliminar actividad deportiva
+      tags:
+      - Actividades
+      x-eov-operation-handler: controllers/ActividadesController
+components:
+  responses:
+    BadRequest:
+      content:
+        application/json:
+          example:
+            estado: error
+            mensaje: Datos inválidos
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+      description: Solicitud con datos invalidos
+    Unauthorized:
+      content:
+        application/json:
+          example:
+            estado: error
+            mensaje: Token de autenticación requerido
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+      description: "Token ausente, invalido o expirado"
+    MethodNotAllowed:
+      content:
+        application/json:
+          example:
+            estado: error
+            mensaje: Método no permitido
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+      description: Metodo HTTP no permitido
+    InternalError:
+      content:
+        application/json:
+          example:
+            estado: error
+            mensaje: Error interno del servidor
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+      description: Error interno del servidor
+  schemas:
+    LoginRequest:
+      example:
+        correo: prueba@example.com
+        contrasena: contrasena
+      properties:
+        correo:
+          example: prueba@example.com
+          format: email
+          type: string
+        contrasena:
+          format: password
+          minLength: 1
+          type: string
+          writeOnly: true
+      required:
+      - contrasena
+      - correo
+      type: object
+    Usuario:
+      example:
+        id: 1
+        nombre: Usuario de prueba
+        correo: correo
+      properties:
+        id:
+          example: 1
+          type: integer
+        nombre:
+          example: Usuario de prueba
+          type: string
+        correo:
+          format: email
+          type: string
+      required:
+      - correo
+      - id
+      - nombre
+      type: object
+    LoginResponse:
+      example:
+        estado: ok
+        mensaje: mensaje
+        token: token
+        usuario:
+          id: 1
+          nombre: Usuario de prueba
+          correo: correo
+      properties:
+        estado:
+          enum:
+          - ok
+          type: string
+        mensaje:
+          type: string
+        token:
+          description: Token generado al iniciar sesion
+          pattern: "^[a-f0-9]{64}$"
+          type: string
+        usuario:
+          $ref: "#/components/schemas/Usuario"
+      required:
+      - estado
+      - mensaje
+      - token
+      - usuario
+      type: object
+    ActividadRequest:
+      example:
+        deporte: Running
+        fecha: 2026-10-24
+        duracion: 1
+        distancia: 0.6027456183070403
+        observacion: ""
+      properties:
+        deporte:
+          enum:
+          - Running
+          - Caminata
+          - Ciclismo
+          - Fútbol
+          - Gimnasio
+          - Natación
+          type: string
+        fecha:
+          description: Fecha valida no futura
+          example: 2026-10-24
+          format: date
+          type: string
+        duracion:
+          description: Duracion en minutos
+          minimum: 1
+          type: integer
+        distancia:
+          default: 0
+          description: Distancia en kilometros
+          format: double
+          minimum: 0
+          type: number
+        observacion:
+          default: ""
+          description: Observacion opcional
+          type: string
+      required:
+      - deporte
+      - duracion
+      - fecha
+      type: object
+    ActualizarActividadRequest:
+      allOf:
+      - $ref: "#/components/schemas/ActividadRequest"
+      - properties:
+          id_actividad:
+            minimum: 1
+            type: integer
+        required:
+        - id_actividad
+        type: object
+      example:
+        deporte: Running
+        fecha: 2026-10-24
+        duracion: 1
+        distancia: 0.6027456183070403
+        observacion: ""
+        id_actividad: 1
+    EliminarActividadRequest:
+      example:
+        id_actividad: 1
+      properties:
+        id_actividad:
+          minimum: 1
+          type: integer
+      required:
+      - id_actividad
+      type: object
+    Actividad:
+      example:
+        id: 0
+        deporte: deporte
+        fecha: 2000-01-23
+        duracion: 6
+        distancia: 1.4658129805029452
+        observacion: observacion
+      properties:
+        id:
+          type: integer
+        deporte:
+          type: string
+        fecha:
+          format: date
+          type: string
+        duracion:
+          type: integer
+        distancia:
+          format: double
+          type: number
+        observacion:
+          type: string
+      type: object
+    RegistroResponse:
+      example:
+        estado: ok
+        mensaje: mensaje
+        id_actividad: 0
+      properties:
+        estado:
+          enum:
+          - ok
+          type: string
+        mensaje:
+          type: string
+        id_actividad:
+          type: integer
+      required:
+      - estado
+      - id_actividad
+      - mensaje
+      type: object
+    EstadoResponse:
+      example:
+        estado: ok
+        mensaje: mensaje
+      properties:
+        estado:
+          enum:
+          - ok
+          type: string
+        mensaje:
+          type: string
+      required:
+      - estado
+      - mensaje
+      type: object
+    ErrorResponse:
+      example:
+        estado: error
+        mensaje: mensaje
+      properties:
+        estado:
+          enum:
+          - error
+          type: string
+        mensaje:
+          type: string
+      required:
+      - estado
+      - mensaje
+      type: object
+    ListaActividadesResponse:
+      example:
+        estado: ok
+        mensaje: mensaje
+        actividades:
+        - id: 0
+          deporte: deporte
+          fecha: 2000-01-23
+          duracion: 6
+          distancia: 1.4658129805029452
+          observacion: observacion
+        - id: 0
+          deporte: deporte
+          fecha: 2000-01-23
+          duracion: 6
+          distancia: 1.4658129805029452
+          observacion: observacion
+      properties:
+        estado:
+          enum:
+          - ok
+          type: string
+        mensaje:
+          type: string
+        actividades:
+          items:
+            $ref: "#/components/schemas/Actividad"
+          type: array
+      required:
+      - actividades
+      - estado
+      - mensaje
+      type: object
+  securitySchemes:
+    bearerAuth:
+      bearerFormat: Token hexadecimal
+      description: |
+        Token de 64 caracteres hexadecimales.
+        Se obtiene mediante login.php.
+        Debe enviarse en Authorization como Bearer.
+      scheme: bearer
+      type: http
