@@ -1,4 +1,3 @@
-
 "use strict";
 
 // Servidor HTTP del prototipo Node.js de PUKAY.
@@ -64,16 +63,50 @@ function crearServidor(almacen = crearAlmacen()) {
     };
 
     const ruta = req.url.split("?")[0];
-    const clave = `${req.method} ${ruta}`;
+    const clave = ${req.method} ${ruta};
+
+    // --------------------------------------------
+    // RUTA DE SALUD Y BIENVENIDA (RENDER)
+    // --------------------------------------------
+    
+    // Ruta de salud para Render
+    if (req.method === "GET" && ruta === "/salud") {
+      return responder({ estado: 200, cuerpo: { estado: "ok", version: "0.2.0" } });
+    }
+
+    // Ruta raíz: Página de bienvenida visual
+    if (req.method === "GET" && ruta === "/") {
+      res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+      return res.end(`
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+            <meta charset="UTF-8">
+            <title>PUKAY - API REST</title>
+            <style>
+                body { font-family: Arial, sans-serif; background-color: #f4f4f9; text-align: center; padding: 50px; }
+                h1 { color: #2c3e50; }
+                .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); display: inline-block; }
+                .status { color: #27ae60; font-weight: bold; }
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <h1>🏃‍♂️ PUKAY - Cadena CASE</h1>
+                <p>Bienvenido al esqueleto ejecutable del proyecto.</p>
+                <p>Estado del servidor: <span class="status">OPERATIVO ✅</span></p>
+                <p><small>Versión 0.2.0 - Desplegado en Render</small></p>
+                <p><a href="/salud">Ver estado en JSON</a> | <a href="/api/deportes">Ver deportes (API)</a></p>
+            </div>
+        </body>
+        </html>
+      `);
+    }
 
     // --------------------------------------------
     // RUTAS PÚBLICAS
     // --------------------------------------------
-     // Ruta de salud para Render
-    if (req.method === "GET" && ruta === "/salud") {
-      return responder({ estado: 200, cuerpo: { estado: "ok", version: "0.2.0" } });
-    }
-    
+
     const rutasPublicas = {
 
       "POST /api/auth/registro": (c) =>
@@ -247,5 +280,3 @@ function crearServidor(almacen = crearAlmacen()) {
 module.exports = {
   crearServidor,
 };
-
-
