@@ -145,6 +145,24 @@ En la prueba de conflicto, la detección y resolución fueron verificadas direct
 
 La responsabilidad de las decisiones y de la aceptación de los resultados corresponde al equipo de desarrollo de PUKAY.
 ---
+
+# Registro de Uso de IA - Semana 4
+
+## Sesión: Semana 4 - Pipeline CI
+- **Herramienta y versión:** Gemini 1.5 Pro (o la que hayan usado).
+- **Qué se pidió:** Ayuda para estructurar el archivo `ci.yml` de GitHub Actions con 5 quality gates (lint, pruebas, contrato, documentación y CodeQL), con permisos mínimos.
+- **Hallazgo de la IA:** Generó la estructura base con permisos correctos y acciones por versión.
+- **Decisión:** Se aceptó la estructura, pero se modificaron los comandos `npm run` para que coincidieran exactamente con los scripts reales del `package.json` de PUKAY.
+- **Cómo se verificó:** Se ejecutó en un PR real. Se forzó una falla a propósito (error de lint) y se comprobó que el pipeline bloqueó el merge. Se corrigió el error y los checks pasaron a verde. Se revisó que el YAML no tuviera secretos y que las acciones estuvieran fijadas.
+
+### Lista de verificación del workflow generado:
+- [x] Permisos mínimos (`contents: read`).
+- [x] Acciones fijadas por versión.
+- [x] Ausencia de secretos o credenciales.
+- [x] Ejecución real comprobada (falla y corrección documentadas).
+
+
+
 ## Conclusión
 
 El uso de inteligencia artificial permitió apoyar la elaboración y revisión de la documentación arquitectónica y de los artefactos de la cadena CASE de PUKAY.
