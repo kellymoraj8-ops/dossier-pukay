@@ -165,6 +165,97 @@ El dossier conserva la trazabilidad entre stakeholders, restricciones, drivers, 
 
 ---
 
+## Ejecución de la cadena CASE de PUKAY
+
+Este repositorio incluye una cadena CASE para validar el contrato OpenAPI, ejecutar pruebas automatizadas y generar documentación técnica.
+
+### Requisitos previos
+
+- Node.js 18 o superior.
+- npm.
+- Git.
+- Conexión a Internet para instalar las dependencias.
+
+### 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/kellymoraj8-ops/dossier-pukay.git
+cd dossier-pukay
+```
+
+### 2. Instalar las dependencias
+
+```bash
+npm install
+```
+
+### 3. Validar el contrato OpenAPI
+
+```bash
+npm run lint:api
+```
+
+Este comando utiliza Spectral para comprobar el archivo `api/openapi.yaml` según las reglas definidas en `.spectral.yaml`.
+
+### 4. Ejecutar el análisis de calidad
+
+```bash
+npm run lint
+```
+
+Este comando utiliza ESLint para revisar el código JavaScript.
+
+### 5. Ejecutar las pruebas automatizadas
+
+```bash
+npm test
+```
+
+Las pruebas se ejecutan mediante Cucumber-JS y comprueban escenarios derivados de los criterios de aceptación.
+
+### 6. Iniciar el servidor de pruebas
+
+```bash
+npm start
+```
+
+Ejecuta el servidor Node.js definido en `src/iniciar.js`. Se utiliza como soporte de la cadena CASE y no sustituye al backend PHP/MySQL de la aplicación Android.
+
+Para detenerlo, presionar `Ctrl + C`.
+
+### 7. Generar los stubs de OpenAPI
+
+```bash
+npm run stubs
+```
+
+Genera el esqueleto del servidor Express en la carpeta `stubs/` a partir del contrato OpenAPI.
+
+**Importante:** la regeneración puede sobrescribir modificaciones manuales realizadas dentro de `stubs/`, incluidas medidas de seguridad. Revisar los cambios antes de incorporarlos.
+
+### 8. Generar documentación de la API
+
+```bash
+npm run docs
+```
+
+Genera la documentación HTML a partir del contrato OpenAPI.
+
+### 9. Verificar los cambios en GitHub
+
+Los Pull Requests hacia `main` se someten a las verificaciones automatizadas configuradas en `.github/workflows/`, incluidas las pruebas, la validación del contrato y el análisis de seguridad.
+
+La integración debe respetar las reglas de protección de la rama principal y las revisiones requeridas.
+
+### Arquitectura de ejecución
+
+La aplicación Android utiliza Java y XML y se comunica con una API REST en PHP, conectada a MySQL.
+
+El servidor Node.js de este repositorio se utiliza para validar y probar la cadena CASE. No debe confundirse con el backend PHP de la aplicación móvil.
+
+
+---
+
 **Proyecto:** PUKAY  
 **Área:** Arquitectura de Software  
 **Año:** 2026

@@ -1,6 +1,6 @@
 {
   "name": "pukay-cadena-case",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Cadena CASE de PUKAY: contrato OpenAPI, esqueleto ejecutable y pruebas derivadas de los criterios de aceptación.",
   "scripts": {
