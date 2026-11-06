@@ -1,200 +1,186 @@
 
-# Matriz de Trazabilidad – PUKAY
+# Matriz de Trazabilidad PUKAY
 
-## 1. Objetivo
+## 1. Objetivo y alcance
 
-Relacionar los requisitos funcionales de PUKAY con las historias de usuario, criterios de aceptación, servicios de la API REST, escenarios Gherkin y resultados de verificación.
+Enlazar, sin eslabones rotos, cada requisito funcional de PUKAY con el escenario de calidad que lo respalda, la decisión arquitectónica (ADR) que lo sostiene, el artefacto del repositorio que lo materializa, el commit o Pull Request que lo incorporó y el job del pipeline de integración continua que lo verifica.
 
-La matriz permite identificar las relaciones comprobadas y aquellas que todavía requieren validación, contribuyendo a la trazabilidad de la cadena CASE.
+**Alcance real de la verificación automática.** PUKAY es una aplicación Android nativa (Java y XML, MVVM con Repository) que consume una API REST en PHP con MySQL (ADR-001, ADR-003). El pipeline de este repositorio **no ejecuta ese código**: ejecuta el *esqueleto Node.js* de la cadena CASE (`src/` y `tests/`, ADR-005), que reproduce el contrato OpenAPI de PUKAY y sirve de banco de pruebas para los criterios de aceptación. Por ello:
 
-## 2. Alcance
+- Una prueba aprobada en el pipeline demuestra que **el contrato y el prototipo cumplen el criterio**, no que el backend PHP/MySQL ni la app Android lo cumplan.
+- Los escenarios de calidad que dependen del cliente Android (E3) o de la disponibilidad real del servidor (E6) no tienen una puerta automática; se indican como tales en la Tabla 1.
 
-La trazabilidad comprende:
+## 2. Convención de identificadores
 
-- Historias de usuario documentadas.
-- Criterios de aceptación en formato Gherkin.
-- Contrato OpenAPI de PUKAY.
-- Esqueleto ejecutable desarrollado en Node.js.
-- Escenarios automatizados mediante Cucumber.
-- Verificaciones realizadas con Spectral y ESLint.
-
-El esqueleto Node.js constituye un prototipo de apoyo para la actividad académica. No reemplaza la arquitectura principal de PUKAY, basada en Android, API REST PHP y MySQL.
-
-## 3. Matriz de trazabilidad funcional
-
-| ID de historia | Funcionalidad | Criterio de aceptación | Servicio relacionado | Escenario o archivo de prueba | Estado de trazabilidad |
-|---|---|---|---|---|---|
-| HU-001 / HU4 | Registro de actividades | CA-01 / CA9: registro exitoso | POST /registrar_actividad.php; equivalente funcional `/api/actividades` | CP09 en `hu4-registrar-actividad.feature` | Verificado en prototipo Node.js |
-| HU-001 / HU4 | Registro de actividades | CA-02 / CA11: rechazo de duración y distancia negativas | POST /registrar_actividad.php; equivalente funcional `/api/actividades` | CP17 en `hu4-registrar-actividad.feature` | Verificado en prototipo Node.js |
-| HU-001 / HU4 | Registro de actividades | CA-03 / CA10: duración obligatoria | POST /registrar_actividad.php; equivalente funcional `/api/actividades` | CP10 en `hu4-registrar-actividad.feature` | Verificado en prototipo Node.js |
-| HU-002 (provisional) / HU1 | Registro de usuario | Por verificar en la historia correspondiente | Servicio de registro; ruta por confirmar | `hu1-registro.feature` | Parcial |
-| HU-003 (provisional) / HU2 | Inicio de sesión | Por verificar en la historia correspondiente | POST /login.php | `hu2-inicio-sesion.feature` | Parcial |
-| HU-004 (provisional) / HU3 | Consulta de deportes | Por verificar en la historia correspondiente | Componente o servicio por confirmar | `hu3-deportes.feature` | Parcial |
-| HU-005 (provisional) / HU5 | Consulta del historial | Por verificar en la historia correspondiente | GET /listar_actividades.php | `hu5-historial.feature` | Parcial |
-| HU6 | Actualización de actividad propia | CP13: actualización autorizada | POST /actualizar_actividad.php | CP13 en `hu6-gestion-actividades-openapi.feature` | Verificado en funciones del prototipo Node.js |
-| HU6 | Rechazo de actualización ajena | CP14: protección de actividades de otros usuarios | POST /actualizar_actividad.php | CP14 en `hu6-gestion-actividades-openapi.feature` | Verificado en funciones del prototipo Node.js |
-| HU6 | Eliminación de actividad propia | CP15: eliminación autorizada | POST /eliminar_actividad.php | CP15 en `hu6-gestion-actividades-openapi.feature` | Verificado en funciones del prototipo Node.js |
-| HU6 | Rechazo de eliminación ajena | CP16: protección de actividades de otros usuarios | POST /eliminar_actividad.php | CP16 en `hu6-gestion-actividades-openapi.feature` | Verificado en funciones del prototipo Node.js |
-
-**Nota 1:** HU-001 es el identificador utilizado en `docs/07-historias-y-criterios.md`, mientras que HU4 es la etiqueta utilizada en el archivo Gherkin de registro de actividades. Se documenta su equivalencia funcional sin renombrar los identificadores originales.
-
-**Nota 2:** Los identificadores HU-002 a HU-005 se conservan provisionalmente hasta contrastarlos con las historias y criterios originales.
-
-**Nota 3:** Las etiquetas CA9, CA10 y CA11 corresponden a los escenarios de `hu4-registrar-actividad.feature`. Las equivalencias con CA-01, CA-02 y CA-03 se establecen por su comportamiento funcional.
-
-**Nota 4:** La relación entre un endpoint PHP y una prueba del prototipo Node.js no significa que dicha prueba haya ejecutado solicitudes contra el backend PHP/MySQL.
-
-## 4. Contrato OpenAPI y operaciones documentadas
-
-El archivo `api/openapi.yaml` contiene cinco operaciones visualizadas mediante Swagger Editor.
-
-| ID | Operación | Finalidad | Relación funcional |
+| Prefijo | Significado | Valores | Dónde se define |
 |---|---|---|---|
-| API-01 | POST /login.php | Autenticación de usuario | HU2 |
-| API-02 | POST /registrar_actividad.php | Registro de actividad deportiva | HU-001 / HU4 |
-| API-03 | GET /listar_actividades.php | Consulta de actividades | HU5 |
-| API-04 | POST /actualizar_actividad.php | Actualización de actividad | HU6 |
-| API-05 | POST /eliminar_actividad.php | Eliminación de actividad | HU6 |
+| HU | Historia de usuario | HU1 a HU6 | `tests/features/` (etiquetas Gherkin) |
+| CA | Criterio de aceptación | CA1 a CA13 | `tests/features/` |
+| CP | Caso de prueba | CP01 a CP17 | `tests/features/` e informe original de PUKAY |
+| E | Escenario de calidad | E1 a E6 | [Escenarios de calidad](01-contexto-y-drivers/F%29Escenarios-calidad.md) |
+| D | Driver arquitectónico | D1 a D5 | [Drivers arquitectónicos](01-contexto-y-drivers/E%29Drivers-arquitectonicos.md) |
+| ADR | Decisión arquitectónica | ADR-001 a ADR-005 | [Carpeta de ADR](03-adr/) |
+| API | Operación del contrato | API-01 a API-05 | [`api/openapi.yaml`](../api/openapi.yaml) |
+| Job | Puerta del pipeline | `calidad`, `pruebas`, `seguridad`, `contrato`, `codeql` | [`.github/workflows/ci.yml`](../.github/workflows/ci.yml) |
 
-Estas operaciones constituyen referencias del contrato OpenAPI. Su presencia en el contrato no equivale a una prueba de integración satisfactoria contra el servidor PHP/MySQL.
+### 2.1. Equivalencias entre los documentos y los archivos Gherkin
 
-## 5. Herramientas de verificación
+El documento [`07-historias-y-criterios.md`](07-historias-y-criterios.md) usa HU-001 y CA-01 a CA-03; los archivos `.feature` usan HU4 y CA9 a CA11. Se documenta la equivalencia sin renombrar ninguno de los dos:
 
-| Herramienta | Propósito | Artefacto o evidencia |
-|---|---|---|
-| Swagger Editor | Visualizar y revisar las operaciones del contrato OpenAPI | `api/openapi.yaml` |
-| Spectral | Validar el contrato OpenAPI mediante reglas | `api/openapi.yaml` y `.spectral.yaml` |
-| Redocly | Generar documentación HTML de la API | Documento HTML generado localmente; ubicación final por confirmar |
-| Cucumber | Ejecutar escenarios Gherkin del prototipo Node.js | `tests/features/` y `tests/steps/` |
-| ESLint | Analizar estáticamente el código JavaScript | Código del prototipo y resultado del comando de lint |
+| En `docs/07` | En `tests/features/` | Prueba | Comportamiento |
+|---|---|---|---|
+| HU-001 | HU4 | — | Registrar una actividad deportiva |
+| CA-01 | CA9 | CP09 | Registro exitoso (HTTP 201 y actividad en el historial) |
+| CA-02 | CA11 | CP17 | Rechazo de duración y distancia negativas (HTTP 400) |
+| CA-03 | CA10 | CP10 | Duración obligatoria (HTTP 400) |
 
-Los archivos de evidencia mencionados en versiones anteriores deben comprobarse en el repositorio antes de presentarlos como adjuntos disponibles.
+## 3. Matriz principal de trazabilidad
 
-## 6. Resultados de verificación
+**Cómo leerla.** Cada fila recorre la cadena completa. La columna *Commit o PR* contiene marcadores que debes reemplazar con el enlace real (ver la guía al final). La columna *Pipeline* indica el job de `ci.yml` que vuelve a comprobar el requisito en cada Pull Request.
 
-### 6.1. Validación OpenAPI
+### 3.1. Requisitos funcionales
 
-Se ejecutó Spectral sobre el contrato OpenAPI de PUKAY.
+| ID | Requisito (HU → CA / CP) | Escenario | ADR | Artefacto | Commit o PR | Pipeline |
+|---|---|---|---|---|---|---|
+| TR-01 | **HU1 Registro de usuario** → CA1 (CP01) registro válido; CA2 (CP02) correo repetido; CA3 (CP03) campos vacíos | E1 | ADR-002, ADR-005 | [`hu1-registro.feature`](../tests/features/hu1-registro.feature); [`src/servicios.js`](../src/servicios.js) (`registrarUsuario`); ruta del prototipo `POST /api/auth/registro` (no documentada en OpenAPI) | [INSERTAR ENLACE AL PR O COMMIT QUE AGREGÓ hu1-registro.feature] | `pruebas` |
+| TR-02 | **HU1** → CA4 (CP06) la contraseña no se almacena en texto plano | E1 | ADR-002 | [`hu1-registro.feature`](../tests/features/hu1-registro.feature); [`src/seguridad.js`](../src/seguridad.js) (hash scrypt con sal) | [INSERTAR ENLACE AL PR O COMMIT QUE AGREGÓ src/seguridad.js] | `pruebas`, `codeql` |
+| TR-03 | **HU2 Inicio de sesión** → CA5 (CP04) credenciales correctas; CA6 (CP05) credenciales no válidas | E2 | ADR-002 | [`hu2-inicio-sesion.feature`](../tests/features/hu2-inicio-sesion.feature); API-01 `POST /login.php` | [INSERTAR ENLACE AL PR O COMMIT QUE AGREGÓ hu2-inicio-sesion.feature] | `pruebas`, `contrato` |
+| TR-04 | **HU3 Deportes** → CA7 (CP08) catálogo de deportes | E5 | ADR-001, ADR-003 | [`hu3-deportes.feature`](../tests/features/hu3-deportes.feature); [`src/almacen.js`](../src/almacen.js) | [INSERTAR ENLACE AL PR O COMMIT QUE AGREGÓ hu3-deportes.feature] | `pruebas` |
+| TR-05 | **HU3** → CA8 (CP07) consulta sin token se rechaza | E2 | ADR-002 | [`hu3-deportes.feature`](../tests/features/hu3-deportes.feature); [`src/servidor.js`](../src/servidor.js) | [INSERTAR ENLACE AL PR O COMMIT QUE AGREGÓ hu3-deportes.feature] | `pruebas` |
+| TR-06 | **HU4 (= HU-001) Registrar actividad** → CA9 (= CA-01, CP09) registro exitoso | E5 | ADR-001, ADR-003 | [`hu4-registrar-actividad.feature`](../tests/features/hu4-registrar-actividad.feature); API-02 `POST /registrar_actividad.php`; [`docs/07`](07-historias-y-criterios.md) | [INSERTAR ENLACE AL PR O COMMIT QUE AGREGÓ hu4-registrar-actividad.feature] | `pruebas`, `contrato` |
+| TR-07 | **HU4** → CA10 (= CA-03, CP10) duración obligatoria | E5 | ADR-001, ADR-003 | [`hu4-registrar-actividad.feature`](../tests/features/hu4-registrar-actividad.feature); API-02 | [INSERTAR ENLACE AL PR O COMMIT QUE AGREGÓ hu4-registrar-actividad.feature] | `pruebas`, `contrato` |
+| TR-08 | **HU4** → CA11 (= CA-02, CP17) rechazo de duración y distancia negativas | E5 | ADR-001, ADR-003 | [`hu4-registrar-actividad.feature`](../tests/features/hu4-registrar-actividad.feature); API-02 | [INSERTAR ENLACE AL PR O COMMIT QUE AGREGÓ EL ESCENARIO CP17] | `pruebas`, `contrato` |
+| TR-09 | **HU5 Historial** → CA12 (CP12) cada usuario ve solo sus actividades ¹ | E2 | ADR-002 | [`hu5-historial.feature`](../tests/features/hu5-historial.feature); API-03 `GET /listar_actividades.php` | [INSERTAR ENLACE AL PR O COMMIT QUE AGREGÓ hu5-historial.feature] | `pruebas`, `contrato` |
+| TR-10 | **HU5** → CA13 (CP07) consulta del historial sin token ¹ | E2 | ADR-002 | [`hu5-historial.feature`](../tests/features/hu5-historial.feature); API-03 | [INSERTAR ENLACE AL PR O COMMIT QUE AGREGÓ hu5-historial.feature] | `pruebas`, `contrato` |
+| TR-11 | **HU6 Gestión de actividades** → CP13 actualizar una actividad propia | E2 ² | ADR-002 | [`hu6-gestion-actividades-openapi.feature`](../tests/features/hu6-gestion-actividades-openapi.feature); API-04 `POST /actualizar_actividad.php` | [INSERTAR ENLACE AL PR O COMMIT QUE AGREGÓ hu6-gestion-actividades-openapi.feature] | `pruebas`, `contrato` |
+| TR-12 | **HU6** → CP14 rechazar la actualización de una actividad ajena | E2 ² | ADR-002 | Igual que TR-11 | [INSERTAR ENLACE AL PR O COMMIT QUE AGREGÓ hu6-gestion-actividades-openapi.feature] | `pruebas`, `contrato` |
+| TR-13 | **HU6** → CP15 eliminar una actividad propia | E2 ² | ADR-002 | [`hu6-gestion-actividades-openapi.feature`](../tests/features/hu6-gestion-actividades-openapi.feature); API-05 `POST /eliminar_actividad.php` | [INSERTAR ENLACE AL PR O COMMIT QUE AGREGÓ hu6-gestion-actividades-openapi.feature] | `pruebas`, `contrato` |
+| TR-14 | **HU6** → CP16 rechazar la eliminación de una actividad ajena | E2 ² | ADR-002 | Igual que TR-13 | [INSERTAR ENLACE AL PR O COMMIT QUE AGREGÓ hu6-gestion-actividades-openapi.feature] | `pruebas`, `contrato` |
 
-**Comando utilizado:**
+¹ En `hu5-historial.feature` estos criterios figuran hoy como `@CA11` y `@CA12`; `@CA11` ya lo usa `hu4-registrar-actividad.feature`. Se propone renumerarlos a CA12 y CA13 (ver Sección 6, inconsistencia I-1).
+² Las pruebas HU6 llevan solo la etiqueta `@OpenAPI`. Su relación con E2 (aislamiento de datos por usuario) es una **asignación propuesta por el equipo** por tratarse de reglas de propiedad de la actividad.
 
-`npx.cmd @stoplight/spectral-cli lint api/openapi.yaml`
+### 3.2. Atributos de calidad y decisiones de proceso
 
-Durante la primera ejecución se presentó un problema debido a la ausencia de un conjunto de reglas.
+| ID | Requisito o decisión | Escenario | ADR | Artefacto | Commit o PR | Pipeline |
+|---|---|---|---|---|---|---|
+| TR-15 | Cambios localizados en la capa de acceso remoto del cliente (D3) | E3 | ADR-003 | Capas Repository y de acceso remoto de la app Android: [INSERTAR RUTA DE LA CARPETA DEL CÓDIGO ANDROID EN EL REPOSITORIO O EN OTRO REPOSITORIO] | [INSERTAR ENLACE AL COMMIT QUE CREÓ LA CAPA REPOSITORY] | **Sin puerta automática** (requiere revisión de código Android) |
+| TR-16 | Backend reutilizable por otro cliente a través de un contrato versionado (D4) | E4 | ADR-003 | [`api/openapi.yaml`](../api/openapi.yaml); `.spectral.yaml`; documentación generada con Redocly | [INSERTAR ENLACE AL PR O COMMIT QUE AGREGÓ api/openapi.yaml] | `contrato` |
+| TR-17 | Comportamiento ante servidor no disponible | E6 ³ | ADR-003 | No hay un documento que defina E6 | [INSERTAR ENLACE A LA EVIDENCIA, SI EXISTE] | **Sin puerta automática** |
+| TR-18 | Control de versiones con Git, flujo GitHub Flow y revisión cruzada | — | ADR-004 | [`CONTRIBUTING.md`](../CONTRIBUTING.md); [`.github/CODEOWNERS`](../.github/CODEOWNERS); [`08-matriz-git-vs-svn.md`](08-matriz-git-vs-svn.md); [`12-resolucion-conflicto-git.md`](12-resolucion-conflicto-git.md) | [PR #16 (conflicto)](https://github.com/kellymoraj8-ops/dossier-pukay/pull/16); [PR #17 (evidencias)](https://github.com/kellymoraj8-ops/dossier-pukay/pull/17); [Release v0.3.0](https://github.com/kellymoraj8-ops/dossier-pukay/releases/tag/v0.3.0) | Protección de `main`: exige los cinco checks y Pull Request |
+| TR-19 | Esqueleto ejecutable que reproduce el contrato para ejercitar la cadena CASE | E1, E2, E4, E5 | ADR-005 | [`src/`](../src/); [`tests/`](../tests/); [`package.json`](../package.json); [`cucumber.js`](../cucumber.js) | [INSERTAR ENLACE AL PR O COMMIT QUE AGREGÓ LA CARPETA src/] | `calidad`, `pruebas`, `codeql` |
+| TR-20 | Pipeline de integración continua con puertas de calidad | — | ADR-004, ADR-005 | [`.github/workflows/ci.yml`](../.github/workflows/ci.yml); [`scripts/escanear-secretos.js`](../scripts/escanear-secretos.js) | [INSERTAR ENLACE AL PR QUE AGREGÓ ci.yml] | Los cinco jobs |
 
-Para resolverlo, se configuró el archivo `.spectral.yaml` con el siguiente contenido:
+³ E6 se menciona en el ADR-003 y en el registro de IA, pero ningún documento de `docs/01-contexto-y-drivers/` lo define todavía (la Tabla 7 llega hasta E5). Hasta definirlo, el eslabón E6 queda abierto.
 
-`extends: ["spectral:oas"]`
+## 4. Detalle de pruebas: criterio → caso de prueba → resultado
 
-Después de repetir la validación, se obtuvo el mensaje:
-
-`No results with a severity of 'error' found!`
-
-**Resultado:** no se encontraron problemas de severidad `error`.
-
-Este resultado no implica necesariamente la ausencia de advertencias ni confirma el funcionamiento del backend.
-
-### 6.2. Pruebas automatizadas Cucumber
-
-Se ejecutaron pruebas automatizadas mediante Cucumber sobre el prototipo Node.js.
-
-**Comando utilizado:**
-
-`npm.cmd test`
-
-**Resultado de la ejecución más reciente:**
-
-| Indicador | Resultado |
-|---|---:|
-| Escenarios ejecutados | 17 |
-| Escenarios aprobados | 17 |
-| Escenarios fallidos | 0 |
-| Pasos ejecutados | 96 |
-| Pasos aprobados | 96 |
-| Pasos fallidos | 0 |
-| Tiempo de ejecución | 1,284 segundos |
-
-**Salida confirmada:**
-
-```text
-17 scenarios (17 passed)
-96 steps (96 passed)
-0m 1.284s (0m 1.205s executing your code)
-```
-
-La suite anterior contenía 16 escenarios aprobados. Se incorporó CP17 para comprobar el rechazo de una actividad con duración de -10 minutos y distancia de -5 kilómetros.
-
-La ejecución actual confirma que CP17 y los demás escenarios finalizaron satisfactoriamente.
-
-**Alcance de la prueba:**
-
-Los escenarios de registro se ejecutan contra las rutas HTTP del servidor de prueba Node.js, como `/api/actividades`.
-
-Los escenarios de actualización y eliminación comprueban funciones del prototipo. No constituyen, por sí mismos, pruebas de integración HTTP contra el backend PHP/MySQL.
-
-### 6.3. Análisis estático ESLint
-
-Se ejecutó el análisis estático del código JavaScript.
-
-**Comando utilizado:**
-
-`npm.cmd run lint`
-
-**Resultado:** ejecución finalizada sin errores reportados en la verificación anterior.
-
-Esta comprobación corresponde al código JavaScript del prototipo y no representa un análisis estático del código Java o PHP de PUKAY.
-
-### 6.4. Cobertura confirmada del registro de actividades
-
-| Criterio documental | Etiqueta Gherkin | Prueba | Comportamiento esperado | Resultado |
+| Criterio | Caso | Escenario Gherkin | Archivo | Resultado |
 |---|---|---|---|---|
-| CA-01: Registro exitoso | CA9 | CP09 | HTTP 201 y actividad visible en historial | Aprobado |
-| CA-02: Rechazo de datos inválidos | CA11 | CP17 | HTTP 400 y ninguna actividad registrada | Aprobado |
-| CA-03: Campos obligatorios | CA10 | CP10 | HTTP 400 y ninguna actividad registrada | Aprobado |
+| CA1 | CP01 | Registro con datos válidos | `hu1-registro.feature` | Aprobado |
+| CA2 | CP02 | Registro con un correo que ya existe | `hu1-registro.feature` | Aprobado |
+| CA3 | CP03 | Registro con campos vacíos | `hu1-registro.feature` | Aprobado |
+| CA4 | CP06 | La contraseña no se almacena en texto plano | `hu1-registro.feature` | Aprobado |
+| CA5 | CP04 | Inicio de sesión con credenciales correctas | `hu2-inicio-sesion.feature` | Aprobado |
+| CA6 | CP05 | Inicio de sesión con credenciales no válidas | `hu2-inicio-sesion.feature` | Aprobado |
+| CA7 | CP08 | El catálogo incluye los deportes definidos | `hu3-deportes.feature` | Aprobado |
+| CA8 | CP07 | Consulta de deportes sin token | `hu3-deportes.feature` | Aprobado |
+| CA9 | CP09 | Registro de una actividad válida y consulta en el historial | `hu4-registrar-actividad.feature` | Aprobado |
+| CA10 | CP10 | Registro de una actividad sin duración | `hu4-registrar-actividad.feature` | Aprobado |
+| CA11 | CP17 | Rechazar duración y distancia negativas | `hu4-registrar-actividad.feature` | Aprobado |
+| CA12 | CP12 | Cada usuario ve solo sus actividades | `hu5-historial.feature` | Aprobado |
+| CA13 | CP07 | Consulta del historial sin token | `hu5-historial.feature` | Aprobado |
+| — | CP13 | Actualizar correctamente una actividad propia | `hu6-gestion-actividades-openapi.feature` | Aprobado ⁴ |
+| — | CP14 | Rechazar actualización de una actividad ajena | `hu6-gestion-actividades-openapi.feature` | Aprobado ⁴ |
+| — | CP15 | Eliminar correctamente una actividad propia | `hu6-gestion-actividades-openapi.feature` | Aprobado ⁴ |
+| — | CP16 | Rechazar eliminación de una actividad ajena | `hu6-gestion-actividades-openapi.feature` | Aprobado ⁴ |
 
-La cobertura indicada corresponde al comportamiento comprobado en el prototipo Node.js.
+⁴ Los escenarios HU6 comprueban funciones de servicio del prototipo; no son pruebas HTTP contra el backend PHP/MySQL.
 
-## 7. Relación con los artefactos de la cadena CASE
+**Caso y escenario que exige la rúbrica.** La rúbrica menciona el caso «reservar cita» y el escenario E1 como ejemplo genérico. En PUKAY corresponden a: el caso de uso principal **«registrar actividad»** (HU4, CP09, CP10 y CP17) y el escenario **E1, protección de contraseñas** (CP01 y CP06). Ambos pasan por el job `pruebas`.
 
-| Artefacto | Función dentro de la trazabilidad |
-|---|---|
-| `docs/06-mapa-toolchain.md` | Identificar fases, tareas prioritarias y herramientas CASE |
-| `docs/07-historias-y-criterios.md` | Documentar historias de usuario y criterios de aceptación |
-| `docs/08-matriz-trazabilidad.md` | Relacionar requisitos, servicios y pruebas |
-| `docs/09-matriz-evaluacion-case.md` | Evaluar y seleccionar herramientas CASE |
-| `docs/04-registro-ia.md` | Documentar uso, defectos y verificación de resultados de IA |
-| `api/openapi.yaml` | Especificar las operaciones del contrato REST |
-| `.spectral.yaml` | Configurar la validación del contrato |
-| `src/` | Contener la implementación del prototipo Node.js |
-| `tests/features/` | Contener escenarios de aceptación en Gherkin |
-| `tests/steps/` | Contener las definiciones de pasos de Cucumber |
+## 5. Resultados de verificación
 
-## 8. Pendientes de verificación
+Comandos ejecutados sobre el repositorio con la configuración del pipeline descrita en el [informe final](09-informe-final.md#anexo-a-apartado-técnico-pipeline-de-integración-continua):
 
-Para completar la trazabilidad general del proyecto se requiere:
+| Puerta | Comando | Resultado |
+|---|---|---|
+| `calidad` | `npm run lint` | Sin errores ni advertencias de ESLint |
+| `pruebas` | `npm run cobertura` | 17 escenarios aprobados, 96 pasos aprobados, 0 fallidos; cobertura de líneas 82,1 % (umbral del pipeline: 80 %) |
+| `seguridad` | `npm run secretos` | Sin secretos detectados |
+| `seguridad` | `npm run auditoria` (solo dependencias de ejecución) | 0 vulnerabilidades |
+| `contrato` | `npm run contrato` | Sin resultados de severidad `warn` o superior |
+| `contrato` | `npm run docs:redoc` | Documentación HTML generada correctamente |
+| `codeql` | Ejecución en GitHub Actions | [INSERTAR ENLACE A LA EJECUCIÓN DEL JOB codeql EN VERDE] |
 
-1. Unificar o documentar las equivalencias entre los identificadores de historias de usuario del dossier y los archivos Gherkin.
-2. Revisar los criterios de aceptación de HU1, HU2, HU3 y HU5.
-3. Confirmar la correspondencia entre los servicios del prototipo Node.js y los endpoints PHP.
-4. Incorporar al repositorio las evidencias de ejecución que correspondan.
-5. Confirmar la existencia y ubicación del documento HTML generado mediante Redocly.
-6. Realizar pruebas de integración contra el backend PHP/MySQL cuando corresponda al alcance de la implementación.
+**Nota sobre la auditoría completa.** `npm audit` sin filtros informa 19 vulnerabilidades (13 de severidad alta y 6 moderadas) que provienen únicamente de herramientas de desarrollo (`@stoplight/prism-cli` y `@openapitools/openapi-generator-cli`). No forman parte de ningún código que se despliegue; el riesgo se acepta de forma documentada y se revisa con Dependabot.
 
-## 9. Conclusión
+## 6. Inconsistencias detectadas y su corrección
 
-La matriz de trazabilidad relaciona los requisitos funcionales de PUKAY con el contrato OpenAPI y las pruebas del prototipo Node.js.
+| ID | Inconsistencia | Dónde | Corrección |
+|---|---|---|---|
+| I-1 | `@CA11` aparece en dos features con significados distintos (CP17 y CP12) | `hu4-registrar-actividad.feature` y `hu5-historial.feature` | Renumerar en HU5: `@CA11 @CP12` → `@CA12 @CP12` y `@CA12 @CP07` → `@CA13 @CP07` |
+| I-2 | El archivo `ADR-005-stack-del-esqueleto.md` lleva el título «ADR-004» en su interior; el ADR-004 es la selección de Git | `docs/03-adr/ADR-005-stack-del-esqueleto.md` | Cambiar el título interno a «ADR-005» y retirar la marca «Confirmar en equipo» del estado |
+| I-3 | `CONTRIBUTING.md` cita `docs/08-matriz-trazabilidad.md` y `docs/09-matriz-evaluacion-case.md`, que no existen con esos nombres | `CONTRIBUTING.md`, líneas 195 y 196 | Reemplazar por `docs/05-trazabilidad.md` y `docs/10-matriz-evaluacion-case.md` |
+| I-4 | El README enumera solo ADR-001 a ADR-003 y enlaza archivos en minúscula (`a-caso-pukay.md`) mientras los archivos reales se llaman `A)Caso-pukay.md` | `README.md` | Actualizar la lista a ADR-001 a ADR-005 y corregir los enlaces (GitHub distingue mayúsculas) |
+| I-5 | La ruta de registro de usuario existe en el prototipo (`/api/auth/registro`) pero no en `api/openapi.yaml` | `api/openapi.yaml` | Documentar la operación en el contrato o declarar que HU1 queda fuera del contrato |
+| I-6 | El supuesto 2 del dossier habla de cinco deportes; el prototipo define seis (incluye natación) | `docs/01-contexto-y-drivers/D)restricciones-supuestos.md` y `src/almacen.js` | Unificar la cantidad en ambos lugares |
+| I-7 | E4 mide «9 de 9 recursos» y el contrato documenta 5 operaciones | `F)Escenarios-calidad.md` y `api/openapi.yaml` | Aclarar que el contrato cubre 5 de los 9 recursos del informe original |
+| I-8 | La evidencia de protección de `main` figura como «Pendiente de verificación» | `evidencias/prueba-proteccion-main.md` | Completar con captura de la regla y del bloqueo de un PR en rojo |
+| I-9 | Los documentos mencionan 16 escenarios; la ejecución actual da 17 | `06-mapa-toolchain.md`, `10-matriz-evaluacion-case.md` | Actualizar a 17 (16 más CP17) |
 
-Se confirmó la correspondencia funcional de los tres criterios de aceptación del registro de actividades con los escenarios CP09, CP10 y CP17.
+## 7. Estado de los eslabones
 
-La última ejecución de Cucumber finalizó con **17 escenarios aprobados, 96 pasos aprobados y ningún fallo**.
+| Eslabón | Estado | Qué falta |
+|---|---|---|
+| Requisito → escenario | Completo para HU1 a HU6 | Definir E6 |
+| Escenario → ADR | Completo para E1 a E5 | Vincular E6 |
+| ADR → artefacto | Completo | Corregir el título de ADR-005 (I-2) |
+| Artefacto → commit o PR | **Parcial** | Reemplazar los marcadores `[INSERTAR ENLACE ...]` de la Tabla 3.1 y 3.2 |
+| Commit o PR → pipeline | **Pendiente de ejecución** | Fusionar `ci.yml`, activar la protección de `main` y enlazar una ejecución en verde |
 
-Adicionalmente, se visualizaron cinco operaciones en Swagger Editor, se validó el contrato con Spectral sin errores de severidad `error` y se ejecutó ESLint sin errores en la verificación anterior.
+## 8. Conclusión
 
-Estos resultados constituyen evidencia del funcionamiento de la cadena CASE dentro del alcance evaluado. No sustituyen las pruebas de integración del backend PHP/MySQL ni de la aplicación Android.
+La trazabilidad de los requisitos funcionales HU1 a HU6 queda cerrada hasta el artefacto y la prueba automatizada, con 17 escenarios aprobados sobre el prototipo del contrato. Los atributos E3 y E6 carecen de una puerta automática y se declaran explícitamente como tales. El único tramo que depende de acciones manuales es el enlace final de cada artefacto con su commit o PR y con la ejecución del pipeline, que se completa con los marcadores indicados.
 
-La trazabilidad del registro de actividades se encuentra verificada en el prototipo Node.js. Las restantes relaciones documentales e integraciones requieren las comprobaciones señaladas en este documento.
+Estos resultados no sustituyen las pruebas de integración de la aplicación Android con el backend PHP y la base de datos MySQL.
 
 ---
+
+## Navegación
+
+[Volver al índice general](../README.md) · [Mapa de toolchain](06-mapa-toolchain.md) · [Historias y criterios](07-historias-y-criterios.md) · [Matriz de evaluación CASE](10-matriz-evaluacion-case.md) · [Registro de IA](04-registro-ia.md) · [Informe final](09-informe-final.md)
+
+---
+
+## 🔍 Guía para Kelly
+
+Esta guía explica cada marcador entre corchetes que dejé en este documento y de dónde sacar la información. **Borra esta sección antes de entregar.**
+
+### Paso previo: dejar el archivo en su lugar
+
+1. En tu computador, dentro del repositorio, ejecuta: `git switch -c docs/trazabilidad-final`.
+2. Renombra el archivo anterior para no perder su historial: `git mv docs/11-matriz-trazabilidad.md docs/05-trazabilidad.md`.
+3. Abre `docs/05-trazabilidad.md`, borra todo su contenido y pega este documento.
+4. Corrige la línea 195 y 196 de `CONTRIBUTING.md` (inconsistencia I-3).
+
+### Qué significa cada marcador
+
+| Marcador | Qué significa | De dónde sacarlo |
+|---|---|---|
+| `[INSERTAR ENLACE AL PR O COMMIT QUE AGREGÓ <archivo>]` | El enlace al Pull Request o commit en el que ese archivo entró al repositorio | En GitHub abre el archivo (por ejemplo `tests/features/hu1-registro.feature`) → botón **History** (arriba a la derecha) → el último commit de la lista (el más antiguo) es el que lo creó → clic → copia la dirección del navegador. Si el cambio llegó por un Pull Request, es mejor el enlace del PR: pestaña **Pull requests** → **Closed** → busca el PR por título → copia su dirección |
+| `[INSERTAR ENLACE AL PR O COMMIT QUE AGREGÓ EL ESCENARIO CP17]` | El commit que agregó el escenario de duración y distancia negativas | Abre `tests/features/hu4-registrar-actividad.feature` → **Blame** (junto a History) → mira la línea de `@CA11 @CP17` → clic en el mensaje del commit que aparece a la izquierda → copia el enlace |
+| `[INSERTAR RUTA DE LA CARPETA DEL CÓDIGO ANDROID ...]` | Dónde está el código Java de la app (capa Repository) | Si el código Android está en otro repositorio, pega su enlace de GitHub y la carpeta (por ejemplo `.../app/src/main/java/.../repository`). Si no está en GitHub, escribe «código en el equipo de Oscar; no versionado en este repositorio» y no inventes un enlace |
+| `[INSERTAR ENLACE AL COMMIT QUE CREÓ LA CAPA REPOSITORY]` | El commit del proyecto Android que creó esa capa | Mismo procedimiento de **History** en el repositorio Android. Pregúntaselo a Oscar si no lo encuentras |
+| `[INSERTAR ENLACE A LA EVIDENCIA, SI EXISTE]` (E6) | Evidencia de la prueba de servidor caído | Si el equipo hizo esa prueba, pega el enlace a la captura. Si no existe, reemplaza el marcador por «Sin evidencia: pendiente» (es más honesto que inventarla) |
+| `[INSERTAR ENLACE AL PR QUE AGREGÓ ci.yml]` | El Pull Request donde subirás el pipeline | Se crea en el Paso 6 del Anexo A del informe final. Después de fusionarlo: **Pull requests** → **Closed** → copia el enlace |
+| `[INSERTAR ENLACE A LA EJECUCIÓN DEL JOB codeql EN VERDE]` | La página de una ejecución del pipeline donde `codeql` salió en verde | Pestaña **Actions** → workflow **CI** → entra en una ejecución con la marca verde → copia la dirección |
+
+### Cosas que debes comprobar tú misma
+
+1. **Inconsistencias I-1 a I-9 (Sección 6):** son errores reales que encontré al leer tu repositorio. Corrige al menos I-1, I-2, I-3 e I-4, porque afectan directamente el criterio «identificadores coinciden entre documentos y repositorio» (25 % de la nota).
+2. **PR #16, PR #17 y la versión v0.3.0:** esos enlaces los tomé de tus propios documentos (`docs/12-resolucion-conflicto-git.md` y `evidencias/README.md`). Ábrelos una vez para confirmar que cargan.
+3. **Columna Pipeline:** solo será verdadera cuando `ci.yml` esté fusionado y funcionando. Si no alcanzas, cambia esas celdas por «Pendiente».
 
 ## Navegación
 
