@@ -75,6 +75,20 @@ function crearServidor(almacen = crearAlmacen()) {
     }
     
     const rutasPublicas = {
+
+
+          // Ruta raíz (Bienvenida)
+    if (req.method === "GET" && ruta === "/") {
+      return responder({
+        estado: 200,
+        cuerpo: { 
+          mensaje: "API PUKAY funcionando", 
+          estado: "ok", 
+          documentacion: "/api/openapi.yaml" 
+        }
+      });
+    }
+    
       "POST /api/auth/registro": (c) =>
         servicios.registrarUsuario(almacen, c),
 
