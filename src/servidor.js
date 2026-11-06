@@ -242,3 +242,6 @@ function crearServidor(almacen = crearAlmacen()) {
 module.exports = {
   crearServidor,
 };
+
+
+const sobrante = 1;
