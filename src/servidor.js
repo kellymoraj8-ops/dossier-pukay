@@ -69,7 +69,11 @@ function crearServidor(almacen = crearAlmacen()) {
     // --------------------------------------------
     // RUTAS PÚBLICAS
     // --------------------------------------------
-
+     // Ruta de salud para Render
+    if (req.method === "GET" && ruta === "/salud") {
+      return responder({ estado: 200, cuerpo: { estado: "ok", version: "0.2.0" } });
+    }
+    
     const rutasPublicas = {
       "POST /api/auth/registro": (c) =>
         servicios.registrarUsuario(almacen, c),
