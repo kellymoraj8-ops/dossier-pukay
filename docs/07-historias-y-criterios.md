@@ -1,121 +1,290 @@
+
 # 07. Historias de Usuario y Criterios de Aceptación — PUKAY
 
-## HU-001: Registro de Actividades Deportivas
+## 1. Introducción
 
-| Campo | Descripción |
-|---|---|
-| Identificador | HU-001 |
-| Módulo | Registro de actividades |
-| Título | Registrar una actividad deportiva |
-| Prioridad | Alta |
-| Estado | Definida para validación y pruebas |
-| Proyecto | PUKAY |
+Este documento establece la trazabilidad de las seis historias de usuario de PUKAY con sus criterios de aceptación, escenarios Gherkin y casos de prueba implementados mediante Cucumber-JS.
 
-### 1. Descripción de la historia de usuario
+Las historias funcionales se identifican como HU1 a HU6, los criterios de aceptación como CA1 a CA17 y los casos de prueba como CP01 a CP17.
 
-**Como** deportista registrado en la aplicación PUKAY,
+Los escenarios de calidad arquitectónica E1, E2 y E5 se relacionan con las historias según las etiquetas presentes en los archivos `.feature`.
 
-**Quiero** registrar mis actividades deportivas ingresando el tipo de deporte, fecha, duración, distancia y observaciones,
+Las pruebas corresponden a la cadena CASE y deben distinguirse de las verificaciones de la aplicación Android y del backend PHP/MySQL.
 
-**Para** llevar un control de mis entrenamientos, consultar mi historial y evaluar mi progreso deportivo.
+---
 
-### 2. Criterios de aceptación en formato Gherkin
+## 2. HU1 — Registro de usuarios
 
-#### CA-01: Registro exitoso de una actividad
+**Como** deportista aficionado,
 
-```gherkin
-Característica: Registro de actividades deportivas
+**Quiero** registrarme con mi correo y una contraseña,
 
-Escenario: Registrar una actividad correctamente
-  Dado que el deportista ha iniciado sesión en PUKAY
-  Y se encuentra en la pantalla "Registrar Actividad"
-  Cuando selecciona el deporte "Running"
-  Y ingresa la fecha "24/10/2026"
-  Y registra una duración de 45 minutos
-  Y registra una distancia de 5 kilómetros
-  Y escribe la observación "Entrenamiento matutino"
-  Y presiona el botón "Guardar Actividad"
-  Entonces el sistema valida los datos ingresados
-  Y guarda la actividad en la base de datos MySQL
-  Y muestra el mensaje "Actividad registrada correctamente"
-  Y la actividad aparece en el historial del deportista
-```
+**Para** utilizar la aplicación con mis datos protegidos.
 
-#### CA-02: Rechazo de datos inválidos
+**Escenario de calidad relacionado:** E1.
 
-```gherkin
-Escenario: Rechazar una actividad con datos inválidos
-  Dado que el deportista ha iniciado sesión en PUKAY
-  Y se encuentra en la pantalla "Registrar Actividad"
-  Cuando selecciona el deporte "Running"
-  Y ingresa una fecha válida
-  Y registra una duración de -10 minutos
-  Y registra una distancia de -5 kilómetros
-  Y presiona el botón "Guardar Actividad"
-  Entonces el sistema identifica los datos inválidos
-  Y muestra un mensaje indicando que la duración
-    y la distancia deben ser valores válidos
-  Y no permite guardar la actividad
-  Y mantiene al deportista en el formulario
-    para corregir los datos
-```
+### Criterios de aceptación
 
-#### CA-03: Validación de campos obligatorios
+| ID | Criterio | Caso de prueba | Resultado esperado |
+|---|---|---|---|
+| CA1 | Registro con datos válidos | CP01 | HTTP 201, correo incluido y contraseña ausente de la respuesta |
+| CA2 | Registro con correo existente | CP02 | HTTP 409 |
+| CA3 | Registro con campos vacíos | CP03 | HTTP 400 |
+| CA4 | Protección de contraseñas | CP06 | Ninguna contraseña en texto plano; contraseñas almacenadas mediante hash y sal |
 
-```gherkin
-Escenario: Intentar registrar una actividad incompleta
-  Dado que el deportista se encuentra en
-    la pantalla "Registrar Actividad"
-  Cuando deja vacío el campo "Duración"
-  Y presiona el botón "Guardar Actividad"
-  Entonces el sistema muestra un mensaje
-    indicando que existen campos obligatorios
-  Y no registra la actividad en la base de datos
-  Y permite completar la información faltante
-```
+**Trazabilidad:** `@HU1`, `@E1`, `@CA1` a `@CA4`.
 
-### 3. Reglas de negocio
+---
 
-| Código | Regla |
-|---|---|
-| RN-01 | El deportista debe tener una sesión activa. |
-| RN-02 | El tipo de deporte y la fecha son obligatorios. |
-| RN-03 | La duración debe ser mayor que cero. |
-| RN-04 | La distancia no puede ser negativa. |
-| RN-05 | Las observaciones son opcionales. |
-| RN-06 | La actividad debe asociarse al usuario autenticado. |
+## 3. HU2 — Inicio de sesión
 
-**Nota:** Estas reglas representan criterios propuestos para la historia de usuario y deben verificarse con las validaciones implementadas en PUKAY.
+**Como** deportista aficionado,
 
-### 4. Trazabilidad de la historia de usuario
+**Quiero** iniciar sesión con mi correo y contraseña,
 
-| Elemento | Identificador | Relación |
+**Para** acceder únicamente a mis propios datos.
+
+**Escenario de calidad relacionado:** E2.
+
+### Criterios de aceptación
+
+| ID | Criterio | Caso de prueba | Resultado esperado |
+|---|---|---|---|
+| CA5 | Inicio de sesión válido | CP04 | HTTP 200 y token de autenticación |
+| CA6 | Credenciales incorrectas | CP05 | HTTP 401 sin token |
+
+**Trazabilidad:** `@HU2`, `@E2`, `@CA5` y `@CA6`.
+
+---
+
+## 4. HU3 — Consulta de deportes disponibles
+
+**Como** deportista aficionado,
+
+**Quiero** consultar los deportes disponibles,
+
+**Para** elegir la actividad que voy a registrar.
+
+**Escenarios de calidad relacionados:** E5 y E2.
+
+### Criterios de aceptación
+
+| ID | Criterio | Caso de prueba | Resultado esperado |
+|---|---|---|---|
+| CA7 | Consultar catálogo autenticado | CP08 | HTTP 200 y catálogo con seis deportes |
+| CA8 | Rechazar consulta sin token | CP07 | HTTP 401 |
+
+Los deportes esperados son:
+
+- Running.
+- Caminata.
+- Ciclismo.
+- Fútbol.
+- Gimnasio.
+- Natación.
+
+**Trazabilidad:** `@HU3`, `@E5`, `@E2`, `@CA7` y `@CA8`.
+
+---
+
+## 5. HU4 — Registro de actividades deportivas
+
+**Como** deportista aficionado,
+
+**Quiero** registrar una actividad con pocos campos,
+
+**Para** consultar mi progreso sin realizar cálculos manuales.
+
+**Escenario de calidad relacionado:** E5.
+
+### Criterios de aceptación
+
+| ID | Criterio | Caso de prueba | Resultado esperado |
+|---|---|---|---|
+| CA9 | Registrar actividad válida | CP09 | HTTP 201 y actividad disponible en el historial |
+| CA10 | Rechazar actividad sin duración | CP10 | HTTP 400 y ninguna actividad registrada |
+| CA11 | Rechazar duración y distancia negativas | CP17 | HTTP 400 y ninguna actividad registrada |
+
+### Reglas de validación
+
+- El usuario debe estar autenticado.
+- El deporte debe ser válido.
+- La fecha debe tener un formato aceptado por la API.
+- La duración debe ser mayor que cero.
+- La distancia no puede ser negativa.
+- Los datos inválidos no deben generar registros.
+
+**Trazabilidad:** `@HU4`, `@E5`, `@CA9`, `@CA10` y `@CA11`.
+
+---
+
+## 6. HU5 — Consulta del historial
+
+**Como** deportista aficionado,
+
+**Quiero** consultar mi historial de actividades,
+
+**Para** visualizar únicamente mis propios entrenamientos.
+
+**Escenario de calidad relacionado:** E2.
+
+### Criterios de aceptación
+
+| ID | Criterio | Caso de prueba | Resultado esperado |
+|---|---|---|---|
+| CA12 | Consultar únicamente actividades propias | CP12 | HTTP 200; dos actividades de Ana y ninguna de otro usuario |
+| CA13 | Rechazar consulta sin token | CP07 | HTTP 401 |
+
+### Regla de seguridad
+
+Las consultas deben utilizar la identidad obtenida mediante autenticación para impedir el acceso a actividades de otros usuarios.
+
+**Trazabilidad:** `@HU5`, `@E2`, `@CA12` y `@CA13`.
+
+---
+
+## 7. HU6 — Actualización y eliminación de actividades
+
+**Como** deportista autenticado de PUKAY,
+
+**Quiero** actualizar y eliminar mis actividades deportivas,
+
+**Para** mantener correcto mi historial de entrenamientos.
+
+**Relación técnica:** operaciones documentadas mediante OpenAPI.
+
+### Criterios de aceptación
+
+| ID | Criterio | Caso de prueba | Resultado esperado |
+|---|---|---|---|
+| CA14 | Actualizar una actividad propia | CP13 | HTTP 200 y actividad actualizada |
+| CA15 | Rechazar actualización de actividad ajena | CP14 | HTTP 404 |
+| CA16 | Eliminar una actividad propia | CP15 | HTTP 200 y actividad ausente del historial |
+| CA17 | Rechazar eliminación de actividad ajena | CP16 | HTTP 404 |
+
+### Reglas de autorización
+
+- El usuario autenticado puede modificar sus propias actividades.
+- No puede modificar actividades pertenecientes a otro usuario.
+- Puede eliminar actividades propias.
+- No puede eliminar actividades ajenas.
+
+**Trazabilidad:** `@HU6`, `@OpenAPI`, `@CA14` a `@CA17`.
+
+---
+
+## 8. Matriz de trazabilidad HU–CA–CP
+
+| Historia | Criterios de aceptación | Casos de prueba | Escenario de calidad |
+|---|---|---|---|
+| HU1 | CA1–CA4 | CP01, CP02, CP03, CP06 | E1 |
+| HU2 | CA5–CA6 | CP04, CP05 | E2 |
+| HU3 | CA7–CA8 | CP08, CP07 | E5, E2 |
+| HU4 | CA9–CA11 | CP09, CP10, CP17 | E5 |
+| HU5 | CA12–CA13 | CP12, CP07 | E2 |
+| HU6 | CA14–CA17 | CP13, CP14, CP15, CP16 | OpenAPI |
+
+**Nota:** CP07 se reutiliza como identificador de caso de prueba en HU3 y HU5. Cada historia mantiene un criterio de aceptación diferente.
+
+La relación con los escenarios E1, E2 y E5 se fundamenta en las etiquetas documentadas en los archivos `.feature`. La relación `@OpenAPI` de HU6 identifica el contrato técnico, no un escenario de calidad arquitectónica.
+
+---
+
+## 9. Convención de identificadores
+
+| Artefacto | Convención | Ejemplo |
 |---|---|---|
-| Historia de usuario | HU-001 | Registro de actividades deportivas |
-| Criterio de aceptación | CA-01 | Registro exitoso |
-| Criterio de aceptación | CA-02 | Rechazo de datos inválidos |
-| Criterio de aceptación | CA-03 | Validación de campos obligatorios |
-| Tarea CASE | T-01 | Elaboración de historias y criterios |
-| Contrato API | Pendiente | Operación de registro de actividad |
-| Pruebas automatizadas | Pendiente | Verificación de CA-01, CA-02 y CA-03 |
+| Historia de usuario | HU + número | HU1 |
+| Criterio de aceptación | CA + número | CA11 |
+| Caso de prueba | CP + dos dígitos | CP09 |
+| Escenario de calidad | E + número | E2 |
 
-La correspondencia con los escenarios identificados en el dossier deberá confirmarse utilizando los identificadores definidos en `01-contexto-y-drivers/f-escenarios-calidad.md`.
+Para resolver la duplicación de CA11:
 
-### 5. Resultado esperado
+- HU4 conserva CA11 para el rechazo de duración y distancia negativas.
+- HU5 utiliza CA12 para la consulta de actividades propias.
+- HU5 utiliza CA13 para la consulta sin token.
+- HU6 incorpora CA14, CA15, CA16 y CA17 para sus cuatro escenarios.
 
-La aplicación PUKAY debe permitir que los deportistas registren correctamente sus entrenamientos mediante la aplicación Android, enviando los datos a la API REST desarrollada en PHP para almacenarlos en MySQL.
+Los identificadores deben coincidir entre este documento y las etiquetas de los archivos `.feature`.
 
-Cuando existan datos inválidos, el sistema debe impedir el registro y mostrar mensajes claros para su corrección.
+---
 
-### 6. Estado de verificación
+## 10. Relación con la cadena CASE
 
-| Elemento | Estado |
+La cadena de verificación del proyecto se representa mediante:
+
+```text
+Historia de usuario (HU)
+        |
+        v
+Criterio de aceptación (CA)
+        |
+        v
+Escenario Gherkin (.feature)
+        |
+        v
+Caso de prueba (CP)
+        |
+        v
+Definición de pasos
+        |
+        v
+Ejecución Cucumber-JS
+        |
+        v
+Resultado de prueba
+```
+
+### Artefactos relacionados
+
+| Artefacto | Ubicación o referencia |
 |---|---|
-| Historia HU-001 | Documentada |
-| Criterios CA-01, CA-02 y CA-03 | Documentados |
-| Reglas de negocio | Pendientes de contrastar con el código |
-| Vinculación con escenarios del dossier | Pendiente |
-| Validación mediante OpenAPI | Pendiente |
-| Pruebas automatizadas | Pendientes de ejecución |
+| Historias y criterios | `docs/07-historias-y-criterios.md` |
+| Contrato OpenAPI | `api/openapi.yaml` |
+| Escenarios de aceptación | Archivos `.feature` del repositorio |
+| Definiciones de pasos | Implementación Cucumber-JS |
+| Mapa de herramientas | `docs/06-mapa-toolchain.md` |
+| Matriz de evaluación CASE | `docs/10-matriz-evaluacion-case.md` |
 
-**Observación:** La historia se considera definida, pero su aceptación definitiva dependerá de comprobar las validaciones, la persistencia y los mensajes implementados en PUKAY.
+---
+
+## 11. Cobertura documental
+
+| Indicador | Resultado |
+|---|---|
+| Historias documentadas | 6 |
+| Criterios de aceptación identificados | 17 |
+| Escenarios Gherkin proporcionados | 17 |
+| Historias con escenarios Gherkin | 6 de 6 |
+| Criterios con caso de prueba asociado | 17 de 17 |
+| Escenarios arquitectónicos referenciados | E1, E2 y E5 |
+| Operaciones OpenAPI referenciadas | Actualización y eliminación de actividades |
+
+La cobertura indicada es documental y corresponde a los escenarios Gherkin revisados.
+
+La aprobación de pruebas automatizadas requiere evidencia de ejecución mediante Cucumber-JS. Los resultados del prototipo Node.js no deben presentarse como pruebas directas del backend PHP/MySQL.
+
+---
+
+## 12. Conclusión
+
+PUKAY dispone de seis historias de usuario relacionadas con diecisiete criterios de aceptación y diecisiete escenarios Gherkin documentados.
+
+La trazabilidad permite relacionar el registro de usuarios, autenticación, consulta de deportes, registro de actividades, consulta del historial y mantenimiento de actividades con sus respectivos casos de prueba.
+
+La normalización de identificadores elimina la duplicación de CA11 y facilita la revisión de la cadena CASE.
+
+El contrato OpenAPI y los escenarios Cucumber constituyen artefactos complementarios para verificar el comportamiento funcional del prototipo, mientras que las verificaciones de la aplicación Android y el backend PHP/MySQL mantienen su propio alcance.
+
+---
+
+## Navegación
+
+[Volver al índice general](README.md)
+
+[Consultar escenarios de calidad](01-contexto-y-drivers/f-escenarios-calidad.md)
+
+[Consultar mapa de toolchain](06-mapa-toolchain.md)
+
+[Consultar matriz de evaluación CASE](10-matriz-evaluacion-case.md)
