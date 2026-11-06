@@ -244,4 +244,3 @@ module.exports = {
 };
 
 
-const sobrante = 1;
