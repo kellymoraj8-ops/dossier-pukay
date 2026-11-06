@@ -1,4 +1,3 @@
-
 "use strict";
 
 // Servidor HTTP del prototipo Node.js de PUKAY.
@@ -67,13 +66,18 @@ function crearServidor(almacen = crearAlmacen()) {
     const clave = `${req.method} ${ruta}`;
 
     // --------------------------------------------
+    // RUTA DE SALUD (PARA RENDER)
+    // --------------------------------------------
+    
+    // Ruta de salud para Render
+    if (req.method === "GET" && ruta === "/salud") {
+      return responder({ estado: 200, cuerpo: { estado: "ok", version: "0.3.0" } });
+    }
+
+    // --------------------------------------------
     // RUTAS PÚBLICAS
     // --------------------------------------------
-     // Ruta de salud para Render
-    if (req.method === "GET" && ruta === "/salud") {
-      return responder({ estado: 200, cuerpo: { estado: "ok", version: "0.2.0" } });
-    }
-    
+
     const rutasPublicas = {
 
       "POST /api/auth/registro": (c) =>
@@ -247,5 +251,3 @@ function crearServidor(almacen = crearAlmacen()) {
 module.exports = {
   crearServidor,
 };
-
-
