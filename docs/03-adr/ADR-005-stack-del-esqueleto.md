@@ -1,10 +1,10 @@
 ## Tabla 47
 
-### ADR-004: Stack Node.js para el Esqueleto de la Cadena CASE
+### ADR-005: Stack Node.js para el Esqueleto de la Cadena CASE
 
 | Campo | Contenido |
 |---|---|
-| **Título** | ADR-004: Stack Node.js para el esqueleto de la cadena CASE |
+| **Título** | ADR-005: Stack Node.js para el esqueleto de la cadena CASE |
 | **Estado** | Aceptada. 🟨 Confirmar en equipo. |
 | **Contexto** | El backend real de PUKAY es PHP con PDO sobre XAMPP y MySQL (R1, ADR-001, ADR-003). Las herramientas de la cadena (Spectral, Prism, OpenAPI Generator, Cucumber.js y ESLint) se instalan con Node.js. El equipo dispone de pocos días para esta entrega (R3). |
 | **Decisión** | El esqueleto de `src/` y las pruebas de `tests/` se escriben en Node.js (18 o superior), sin base de datos (almacén en memoria) y sin frameworks de servidor. Cubre cinco recursos de la Tabla 10 del informe (procesos 1 a 3). No sustituye al backend PHP: es un artefacto para ejercitar la cadena sobre el contrato de PUKAY. |
