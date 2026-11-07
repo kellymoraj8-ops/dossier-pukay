@@ -128,12 +128,12 @@ El dossier de PUKAY documenta el contexto del sistema, las restricciones, los es
 | Documento | Descripción |
 |---|---|
 | [Índice de la Parte I](docs/01-contexto-y-drivers/README.md) | Organización de la primera parte del dossier |
-| [El caso PUKAY](docs/01-contexto-y-drivers/a-caso-pukay.md) | Contexto y problemática |
-| [Convención de identificadores](docs/01-contexto-y-drivers/b-convencion-identificadores.md) | Identificadores para trazabilidad |
-| [Stakeholders y concerns](docs/01-contexto-y-drivers/c-stakeholders-concerns.md) | Participantes e intereses |
-| [Restricciones y supuestos](docs/01-contexto-y-drivers/d-restricciones-supuestos.md) | Condiciones del proyecto |
-| [Drivers arquitectónicos](docs/01-contexto-y-drivers/e-drivers-arquitectonicos.md) | Factores que orientan las decisiones |
-| [Escenarios de calidad](docs/01-contexto-y-drivers/f-escenarios-calidad.md) | Atributos y escenarios de evaluación |
+| [El caso PUKAY]((docs/01-contexto-y-drivers/A)Caso-pukay.md) | Contexto y problemática |
+| [Convención de identificadores]((docs/01-contexto-y-drivers/B)convencion-identificadores.md) | Identificadores para trazabilidad |
+| [Stakeholders y concerns]((docs/01-contexto-y-drivers/C)stakeholders-concerns.md) | Participantes e intereses |
+| [Restricciones y supuestos]((docs/01-contexto-y-drivers/D)restricciones-supuestos.md) | Condiciones del proyecto |
+| [Drivers arquitectónicos]((docs/01-contexto-y-drivers/E)drivers-arquitectonicos.md) | Factores que orientan las decisiones |
+| [Escenarios de calidad]((docs/01-contexto-y-drivers/F)escenarios-calidad.md) | Atributos y escenarios de evaluación |
 
 ### Parte II. Vistas arquitectónicas C4
 
