@@ -829,46 +829,4 @@ La salida es una tabla en Markdown que se pega en la sección 6.3. Los archivos 
 
 [Volver al índice general](../README.md) · [Trazabilidad](05-trazabilidad.md) · [Registro de IA](04-registro-ia.md) · [Mapa de toolchain](06-mapa-toolchain.md) · [Matriz de evaluación CASE](10-matriz-evaluacion-case.md) · [Resolución del conflicto Git](12-resolucion-conflicto-git.md)
 
----
 
-## 🔍 Guía para Kelly
-
-Esta guía explica cómo completar el informe. **Borra esta sección antes de entregar.** Prioridad: el pipeline (30 % de la nota) y la trazabilidad (25 %) pesan más que el informe (20 %), así que primero haz el Anexo A.
-
-### Orden recomendado de trabajo
-
-1. **Haz el Anexo A, pasos 1 a 6.** Es lo que más puntos da y todo lo demás depende de que `ci.yml` exista y funcione.
-2. **Paso 7 (protección de `main`) y pasos 8 y 9 (falla provocada).** Toma capturas a pantalla completa en cada momento (rojo y verde): el docente penaliza las capturas recortadas.
-3. **Anexo B (métricas DORA)** cuando ya tengas Pull Request y ejecuciones de CI.
-4. **Reemplaza los marcadores** de este informe usando la tabla de abajo.
-5. **Corrige las inconsistencias** listadas en la Sección 6 de [`05-trazabilidad.md`](05-trazabilidad.md).
-6. **Borra las tres guías** («🔍 Guía para Kelly») de los tres documentos y entrega el commit final.
-
-### Qué significa cada marcador
-
-| Marcador | Qué significa | De dónde sacarlo |
-|---|---|---|
-| `[INSERTAR AQUÍ ENLACE AL REPOSITORIO O CARPETA DEL CÓDIGO ANDROID ...]` y `[... CÓDIGO PHP ...]` | Dónde está el código real de la app y de la API | Pregúntale a Oscar. Si está en otro repositorio de GitHub, pega su dirección. Si no está en GitHub, escribe «No versionado en este repositorio» y no inventes un enlace |
-| `[INSERTAR AQUÍ LA DEFINICIÓN DE E6 ...]` | Qué mide el escenario E6 | Nadie lo ha definido en `docs/`. Opciones: redáctalo siguiendo el formato de seis partes de E1 a E5 (fuente, estímulo, entorno, artefacto, respuesta, medida), o escribe «Pendiente de definir» |
-| `[INSERTAR ENLACE A LA CAPTURA DE LA REGLA DE PROTECCIÓN DE main ...]` | La imagen de la regla activa | Captura Settings → Rules (con la regla visible), súbela a `evidencias/` con un nombre como `proteccion-main-regla.png` y enlaza esa ruta |
-| `[INSERTAR AQUÍ LO QUE VIO: QUÉ CHECKS FALLARON ...]` | Lo que realmente observaste en el Paso 8 | Escribe tal cual: «`seguridad` en rojo; los otros cuatro en verde; el botón de fusión decía “Merging is blocked”». **No lo copies de este informe: debe ser lo que viste** |
-| `[INSERTAR AQUÍ LO QUE VIO TRAS CORREGIR]` | Lo que observaste en el Paso 9 | Igual que arriba |
-| `[INSERTAR ENLACE AL PR DE LA FALLA PROVOCADA]` | El Pull Request de `prueba/secreto` | En GitHub: **Pull requests → Closed** → ábrelo → copia la dirección del navegador |
-| `[INSERTAR RUTAS DE LAS CAPTURAS ...]` | Las imágenes del check en rojo y en verde | Guárdalas en `evidencias/` y escribe sus rutas, por ejemplo `evidencias/ci-seguridad-rojo.png` |
-| `[INSERTAR ENLACE A UNA EJECUCIÓN DE CI EN VERDE]` | Una ejecución con los cinco checks en verde | Pestaña **Actions** → **CI** → una ejecución con la marca verde → copia la dirección |
-| `[INSERTAR DURACIÓN TOTAL DEL PIPELINE EN MINUTOS]` | Cuánto tarda el pipeline | En esa misma ejecución, «Total duration» arriba a la derecha |
-| `[INSERTAR ENLACE AL README CON LA INSIGNIA VISIBLE]` | La página del README en GitHub donde se ve la insignia | Abre el repositorio en GitHub, comprueba que la insignia aparece verde y copia la dirección de esa página |
-| `[INSERTAR FECHA DE INICIO Y FECHA DE FIN DEL PERIODO MEDIDO]` | El rango de fechas de las métricas | Por ejemplo, desde el primer Pull Request del proyecto hasta hoy. Debe coincidir con las fechas que pasas a `node scripts/dora.js` |
-| `[INSERTAR RESULTADO DE scripts/dora.js: FILA ...]` | El valor de cada métrica | Ejecuta el Anexo B y copia cada fila de la tabla de salida |
-| `[INSERTAR NÚMERO DE ... ]` (PR, releases, recuperaciones, fallidas) | Los datos que usó el cálculo | La columna «Datos usados» de la salida de `node scripts/dora.js` |
-| `[INSERTAR AQUÍ DOS O TRES FRASES PROPIAS ...]` | Tu interpretación de las métricas | Escríbela tú: qué métrica salió mejor, cuál peor y por qué. Es parte del «análisis crítico» que pide la rúbrica |
-| `[CONFIRMAR QUÉ FUNCIÓN DE HASH USA EL CÓDIGO PHP REAL ...]` | Cómo guarda la contraseña el backend PHP | Pregúntale a Oscar o busca en el código PHP `password_hash` o `md5`/`sha1`. Escribe lo que realmente usa |
-| `[CONFIRMAR SI EL REPOSITORIO ES PÚBLICO]` | Si cualquiera puede ver el repositorio | Settings → General → abajo, «Danger Zone» muestra la visibilidad. CodeQL gratuito requiere repositorio público |
-
-### Cosas que debes comprobar tú misma
-
-1. **Los números del informe vienen de mi ejecución en un entorno aislado** (17 escenarios, 82,1 % de cobertura, 0 vulnerabilidades de ejecución, 19 en la auditoría completa). Vuelve a ejecutar `npm run cobertura` y `npm audit` en tu computador y comprueba que coinciden; si no, corrige los números.
-2. **Los enlaces al PR #16, PR #17, Issue #13 y release v0.3.0** los tomé de tus propios documentos. Ábrelos una vez para confirmar que cargan.
-3. **La sección 8 (análisis crítico) es un borrador.** Son hallazgos reales de tu repositorio, pero el docente evalúa tu criterio: léela, ajusta lo que no compartas y añade lo que viviste en el trabajo en equipo.
-4. **Sección 4.4 (versionado):** si ya actualizaste `CHANGELOG.md` y `package.json`, borra la observación.
-5. **La cifra «29 usos» en la sección 7** cuenta las filas de las tablas 34, 35, 36, 36-bis, 38 y 39 de `04-registro-ia.md`. Si agregas o quitas filas, actualízala.
