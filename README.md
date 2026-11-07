@@ -1,133 +1,443 @@
+# 🏃 PUKAY — Arquitectura de Software y Cadena CASE
 
-# PUKAY — Documentación de Arquitectura de Software
+**Proyecto académico | Arquitectura de Software | 2026**
 
-## Descripción del Proyecto
+PUKAY es una aplicación móvil Android orientada al registro y seguimiento de actividades deportivas y metas personales.
 
-PUKAY es una aplicación móvil nativa para Android, orientada al registro y seguimiento de actividades deportivas y metas personales.
-
-El sistema permite a los usuarios registrarse, iniciar sesión, seleccionar disciplinas deportivas, registrar entrenamientos, consultar su historial y realizar un seguimiento de sus objetivos.
-
-La aplicación utiliza una arquitectura cliente-servidor, donde el cliente Android se comunica con una API REST desarrollada en PHP, encargada de gestionar las operaciones y el acceso a una base de datos MySQL.
+Este repositorio contiene la documentación arquitectónica del proyecto y una **cadena CASE ejecutable** que permite validar el contrato de la API, realizar análisis estático, ejecutar pruebas automatizadas y generar documentación técnica.
 
 ---
 
-## Objetivo de la Documentación
+## 1. Descripción del proyecto
 
-Documentar la arquitectura de software de PUKAY mediante la identificación de stakeholders, restricciones, drivers arquitectónicos, escenarios de calidad, vistas C4 y decisiones arquitectónicas.
+PUKAY permite a los deportistas registrar sus entrenamientos, consultar actividades anteriores y realizar un seguimiento de sus objetivos personales.
 
-La documentación también incluye el análisis de alternativas arquitectónicas y un registro del uso de inteligencia artificial como herramienta de apoyo durante la elaboración del dossier.
+### Funcionalidades principales
+
+- Registro de usuarios.
+- Inicio de sesión y autenticación.
+- Consulta de disciplinas deportivas.
+- Registro de actividades físicas.
+- Consulta del historial de entrenamientos.
+- Modificación y eliminación de actividades.
+- Registro y seguimiento de metas personales.
+- Visualización del progreso deportivo.
+
+El sistema utiliza una arquitectura cliente-servidor que separa la interfaz móvil, la lógica del servidor y el almacenamiento de información.
+
+## 2. Objetivo general
+
+Desarrollar y documentar una solución de seguimiento deportivo mediante una arquitectura cliente-servidor, aplicando decisiones arquitectónicas justificadas y herramientas CASE que permitan verificar la calidad del software, la consistencia del contrato de la API y el cumplimiento de los criterios de aceptación.
+
+### Objetivos específicos
+
+1. Documentar los requisitos, restricciones y drivers arquitectónicos.
+2. Representar la arquitectura mediante diagramas C4.
+3. Justificar las decisiones técnicas mediante registros ADR.
+4. Especificar los servicios mediante OpenAPI.
+5. Automatizar pruebas funcionales con Cucumber-JS.
+6. Integrar verificaciones de calidad y seguridad con GitHub Actions.
+7. Proporcionar evidencias reproducibles del funcionamiento de la cadena CASE.
 
 ---
 
-## Tecnologías Utilizadas
+## 3. Arquitectura del sistema
 
-| Componente | Tecnología |
-|---|---|
-| Aplicación móvil | Android nativo |
-| Lenguaje del cliente | Java |
-| Interfaces gráficas | XML |
-| Organización del cliente | MVVM y Repository |
-| Backend | PHP |
-| Comunicación | API REST y JSON |
-| Servidor de desarrollo | Apache mediante XAMPP |
-| Base de datos | MySQL |
-| Acceso a datos del servidor | PDO |
-| Diagramas arquitectónicos | Mermaid |
-| Control de versiones | Git y GitHub |
-| Documentación | Markdown |
+PUKAY se organiza en tres componentes principales:
+
+| Componente | Tecnología | Responsabilidad |
+|---|---|---|
+| Cliente móvil | Android, Java y XML | Interfaz de usuario y operaciones de la aplicación |
+| Backend principal | PHP y API REST | Procesamiento de solicitudes, autenticación y reglas de negocio |
+| Base de datos | MySQL | Almacenamiento centralizado de usuarios, actividades y metas |
+
+### Flujo de comunicación
+
+```text
+┌──────────────────────────┐
+│    Aplicación Android    │
+│       Java + XML         │
+└────────────┬─────────────┘
+             │
+             │ Solicitudes HTTPS / JSON
+             ▼
+┌──────────────────────────┐
+│        API REST          │
+│           PHP            │
+└────────────┬─────────────┘
+             │
+             │ Consultas mediante PDO
+             ▼
+┌──────────────────────────┐
+│       Base de datos      │
+│          MySQL           │
+└──────────────────────────┘
+```
+
+La aplicación Android no accede directamente a MySQL. Todas las operaciones de almacenamiento se realizan a través del backend.
+
+### Arquitectura del cliente
+
+El cliente utiliza el patrón **MVVM + Repository**, que permite separar las responsabilidades de presentación, lógica de aplicación y acceso a datos.
+
+### Seguridad
+
+El diseño contempla:
+
+- Protección de contraseñas mediante funciones de hash.
+- Autenticación mediante tokens.
+- Control de acceso a la información de cada usuario.
+- Comunicación mediante HTTPS.
+- Acceso a MySQL exclusivamente desde el servidor.
 
 ---
 
-## Organización de la Documentación
+## 4. Tecnologías y herramientas
 
-### Parte I. Contexto y Drivers Arquitectónicos
+| Categoría | Tecnología | Utilización |
+|---|---|---|
+| Aplicación móvil | Android Studio | Desarrollo de la aplicación |
+| Lenguaje móvil | Java | Implementación de funcionalidades |
+| Interfaces | XML | Diseño de pantallas |
+| Arquitectura del cliente | MVVM + Repository | Separación de responsabilidades |
+| Backend principal | PHP | Implementación de servicios REST |
+| Servidor de desarrollo | Apache / XAMPP | Ejecución local del backend |
+| Base de datos | MySQL | Persistencia centralizada |
+| Acceso a datos | PDO | Comunicación PHP–MySQL |
+| Servidor de pruebas | Node.js | Ejecución de servicios de la cadena CASE |
+| Contrato de API | OpenAPI | Especificación de servicios |
+| Validación del contrato | Spectral | Análisis de reglas OpenAPI |
+| Pruebas de aceptación | Cucumber-JS | Ejecución de escenarios Gherkin |
+| Calidad de código | ESLint | Análisis estático de JavaScript |
+| Generación de código | OpenAPI Generator | Generación de stubs |
+| Automatización | GitHub Actions | Integración continua |
+| Seguridad | CodeQL | Análisis de código |
+| Dependencias | Dependabot | Identificación de vulnerabilidades |
+| Control de versiones | Git y GitHub | Historial y colaboración |
+| Documentación | Markdown y Mermaid | Documentación y diagramas |
+| Plataforma de despliegue | Render | Entorno previsto para el servidor Node.js |
 
-Esta sección identifica las necesidades del sistema, los participantes involucrados, las restricciones y los atributos de calidad que orientan las decisiones arquitectónicas.
+---
+
+## 5. Documentación arquitectónica
+
+El dossier de PUKAY documenta el contexto del sistema, las restricciones, los escenarios de calidad, las vistas arquitectónicas y las decisiones técnicas.
+
+### Parte I. Contexto y drivers arquitectónicos
 
 | Documento | Descripción |
 |---|---|
-| [Índice de la Parte I](docs/01-contexto-y-drivers/README.md) | Presentación y organización de la primera parte del dossier. |
-| [El Caso PUKAY](docs/01-contexto-y-drivers/a-caso-pukay.md) | Contexto, problemática y descripción general del sistema. |
-| [Convención de Identificadores](docs/01-contexto-y-drivers/b-convencion-identificadores.md) | Identificadores utilizados para mantener la trazabilidad documental. |
-| [Stakeholders y Concerns](docs/01-contexto-y-drivers/c-stakeholders-concerns.md) | Participantes e intereses relacionados con el sistema. |
-| [Restricciones y Supuestos](docs/01-contexto-y-drivers/d-restricciones-supuestos.md) | Condiciones técnicas y organizacionales del proyecto. |
-| [Drivers Arquitectónicos](docs/01-contexto-y-drivers/e-drivers-arquitectonicos.md) | Factores que orientan las decisiones de arquitectura. |
-| [Escenarios de Calidad](docs/01-contexto-y-drivers/f-escenarios-calidad.md) | Escenarios que permiten evaluar los atributos de calidad. |
+| [Índice de la Parte I](docs/01-contexto-y-drivers/README.md) | Organización de la primera parte del dossier |
+| [El caso PUKAY](docs/01-contexto-y-drivers/a-caso-pukay.md) | Contexto y problemática |
+| [Convención de identificadores](docs/01-contexto-y-drivers/b-convencion-identificadores.md) | Identificadores para trazabilidad |
+| [Stakeholders y concerns](docs/01-contexto-y-drivers/c-stakeholders-concerns.md) | Participantes e intereses |
+| [Restricciones y supuestos](docs/01-contexto-y-drivers/d-restricciones-supuestos.md) | Condiciones del proyecto |
+| [Drivers arquitectónicos](docs/01-contexto-y-drivers/e-drivers-arquitectonicos.md) | Factores que orientan las decisiones |
+| [Escenarios de calidad](docs/01-contexto-y-drivers/f-escenarios-calidad.md) | Atributos y escenarios de evaluación |
 
----
-
-### Parte II. Vistas Arquitectónicas C4
-
-Esta sección representa la arquitectura del sistema mediante diagramas que permiten comprender sus elementos y relaciones.
+### Parte II. Vistas arquitectónicas C4
 
 | Documento | Descripción |
 |---|---|
-| [C4 Nivel 1 — Contexto](docs/02-vistas-c4/c4-nivel1.md) | Representa PUKAY y su relación con los usuarios y el entorno. |
-| [C4 Nivel 2 — Contenedores](docs/02-vistas-c4/c4-nivel2.md) | Representa la aplicación Android, la API REST y la base de datos MySQL. |
+| [C4 Nivel 1 — Contexto](docs/02-vistas-c4/c4-nivel1.md) | Relación entre PUKAY y sus usuarios |
+| [C4 Nivel 2 — Contenedores](docs/02-vistas-c4/c4-nivel2.md) | Aplicación Android, API REST y MySQL |
 
-Los diagramas permiten visualizar la separación de responsabilidades entre el cliente móvil, el servidor y el almacenamiento de información.
+### Decisiones arquitectónicas
 
----
+Las decisiones se documentan mediante registros ADR:
 
-### Decisiones Arquitectónicas (ADR)
-
-Los registros de decisiones arquitectónicas documentan las soluciones seleccionadas, sus motivos y sus consecuencias.
-
-Se incluyen las siguientes decisiones:
-
-- **ADR-001:** Persistencia de datos mediante MySQL.
+- **ADR-001:** Persistencia centralizada mediante MySQL.
 - **ADR-002:** Protección de credenciales y autenticación.
 - **ADR-003:** Arquitectura cliente-servidor mediante API REST.
 
-**[Consultar la carpeta de decisiones arquitectónicas](docs/03-adr/)**
+[Consultar las decisiones arquitectónicas](docs/03-adr/)
 
----
+### Parte III. Evaluación arquitectónica
 
-### Parte III. Evaluación Arquitectónica
+Se comparan tres alternativas:
 
-Esta sección contempla la comparación de alternativas arquitectónicas para determinar qué estilo responde mejor a los drivers, escenarios de calidad y restricciones del proyecto.
-
-Se consideran tres alternativas:
-
-| ID | Alternativa |
+| Identificador | Alternativa |
 |---|---|
-| A1 | Aplicación autónoma con almacenamiento local. |
-| A2 | Cliente-servidor con API REST. |
-| A3 | Backend como servicio. |
+| A1 | Aplicación autónoma con almacenamiento local |
+| A2 | Arquitectura cliente-servidor mediante API REST |
+| A3 | Backend como servicio |
 
-Documentos disponibles:
+La alternativa seleccionada es **A2: cliente-servidor mediante API REST**, por su alineación con las restricciones del proyecto y la necesidad de centralizar los datos.
 
-- [Índice de Evaluación Arquitectónica](docs/05-evaluacion-arquitectonica/README.md)
-- [Alternativas Arquitectónicas](docs/05-evaluacion-arquitectonica/01-alternativas-arquitectonicas.md)
+Documentos:
 
-**Estado:** En desarrollo. La evaluación ponderada y las actividades complementarias se mantienen pendientes, de acuerdo con el alcance actual del trabajo académico.
-
----
-
-## Registro del Uso de Inteligencia Artificial
-
-Durante la elaboración del dossier se utilizó ChatGPT como herramienta de apoyo para la revisión, organización y mejora de la documentación arquitectónica.
-
-Las propuestas generadas por la IA fueron analizadas y contrastadas con el informe original del proyecto y las decisiones del equipo de desarrollo.
-
-### Documentación del Registro
-
-**[Consultar el Registro de Uso y Contraste de IA](docs/04-registro-ia.md)**
-
-El documento incluye:
-
-- **Tabla 34. Uso de IA en la Elaboración del Borrador del Dossier:** actividades, verificaciones y decisiones de aceptación, modificación o rechazo.
-- **Tabla 35. Registro del Contraste con IA (S1, S2 y S3):** solicitudes realizadas, hallazgos, decisiones del equipo y mecanismos de verificación.
-- Identificación de la herramienta utilizada.
-- Conclusiones sobre el uso responsable de IA.
-
-La inteligencia artificial se empleó como una herramienta complementaria. La revisión y aprobación de las decisiones arquitectónicas corresponde al equipo de desarrollo.
+- [Índice de evaluación arquitectónica](docs/05-evaluacion-arquitectonica/README.md)
+- [Alternativas arquitectónicas](docs/05-evaluacion-arquitectonica/01-alternativas-arquitectonicas.md)
 
 ---
 
-## Trazabilidad Arquitectónica
+## 6. Cadena CASE de PUKAY
 
-La documentación utiliza identificadores para mantener la relación entre las necesidades del sistema y las decisiones arquitectónicas.
+La cadena CASE integra herramientas que permiten verificar diferentes aspectos del proyecto mediante procedimientos reproducibles.
+
+### Flujo de trabajo
+
+```text
+Historias de usuario
+        │
+        ▼
+Criterios de aceptación
+        │
+        ▼
+Contrato OpenAPI
+        │
+        ├──► Spectral: validación del contrato
+        │
+        ├──► OpenAPI Generator: generación de stubs
+        │
+        ▼
+Servicios Node.js de pruebas
+        │
+        ├──► ESLint: calidad del código
+        │
+        └──► Cucumber-JS: pruebas automatizadas
+                    │
+                    ▼
+              GitHub Actions
+                    │
+                    ├──► Validación del contrato
+                    ├──► Calidad del código
+                    ├──► Pruebas
+                    └──► Documentación
+```
+
+### Herramientas y evidencias
+
+| Herramienta | Función | Evidencia |
+|---|---|---|
+| OpenAPI | Definir el contrato REST | `api/openapi.yaml` |
+| Spectral | Validar la especificación | `npm run lint:api` |
+| OpenAPI Generator | Generar código base | Carpeta `stubs/` |
+| ESLint | Analizar código JavaScript | `npm run lint` |
+| Cucumber-JS | Ejecutar pruebas de aceptación | `npm test` |
+| GitHub Actions | Automatizar verificaciones | `.github/workflows/` |
+| CodeQL | Analizar problemas de seguridad | Resultados de Code Scanning |
+| Dependabot | Detectar dependencias vulnerables | Alertas de Dependabot |
+
+**Importante:** el servidor Node.js se utiliza para las pruebas y la cadena CASE. No reemplaza al backend PHP/MySQL de la aplicación Android.
+
+---
+
+## 7. Historias de usuario y criterios de aceptación
+
+La cadena CASE utiliza historias de usuario para relacionar las funcionalidades del sistema con pruebas verificables.
+
+| Historia | Funcionalidad |
+|---|---|
+| HU1 | Registro de usuarios |
+| HU2 | Inicio de sesión |
+| HU3 | Consulta de deportes |
+| HU4 | Registro de actividades |
+| HU5 | Consulta del historial |
+| HU6 | Modificación y eliminación de actividades |
+
+Los criterios de aceptación se expresan mediante escenarios Gherkin, utilizando las estructuras **Dado, Cuando y Entonces**.
+
+Esta organización permite relacionar los requisitos funcionales con las pruebas automatizadas.
+
+[Consultar historias y criterios de aceptación](docs/07-historias-y-criterios.md)
+
+---
+
+## 8. Resultados de pruebas automatizadas
+
+En la ejecución local verificada de la cadena CASE se obtuvieron los siguientes resultados:
+
+| Indicador | Resultado |
+|---|---|
+| Escenarios Cucumber | 17 aprobados de 17 |
+| Pasos Cucumber | 96 aprobados de 96 |
+| Análisis ESLint | Ejecución sin errores |
+| Instalación de dependencias | Completada |
+
+Salida de Cucumber-JS:
+
+```text
+17 scenarios (17 passed)
+96 steps (96 passed)
+```
+
+Estos resultados corresponden a la ejecución local comprobada durante el desarrollo. Para conocer el estado actualizado del repositorio se deben consultar las ejecuciones de GitHub Actions.
+
+[Consultar GitHub Actions](https://github.com/kellymoraj8-ops/dossier-pukay/actions)
+
+---
+
+## 9. Ejecución local de la cadena CASE
+
+### Requisitos previos
+
+- Node.js 18 o superior, compatible con las dependencias instaladas.
+- npm.
+- Git.
+- Conexión a Internet para instalar las dependencias.
+
+### Paso 1. Clonar el repositorio
+
+```bash
+git clone https://github.com/kellymoraj8-ops/dossier-pukay.git
+cd dossier-pukay
+```
+
+### Paso 2. Instalar las dependencias
+
+```bash
+npm ci
+```
+
+Este comando instala las dependencias definidas en el archivo de bloqueo del proyecto.
+
+### Paso 3. Validar el contrato OpenAPI
+
+```bash
+npm run lint:api
+```
+
+Utiliza Spectral para revisar la especificación `api/openapi.yaml` conforme a las reglas de `.spectral.yaml`.
+
+### Paso 4. Analizar la calidad del código
+
+```bash
+npm run lint
+```
+
+Ejecuta ESLint sobre el código JavaScript.
+
+### Paso 5. Ejecutar pruebas automatizadas
+
+```bash
+npm test
+```
+
+Ejecuta los escenarios de aceptación implementados mediante Cucumber-JS.
+
+### Paso 6. Iniciar el servidor de pruebas
+
+```bash
+npm start
+```
+
+Inicia el servidor Node.js definido en `src/iniciar.js`.
+
+Para detenerlo, utilizar `Ctrl + C`.
+
+### Paso 7. Generar los stubs
+
+```bash
+npm run stubs
+```
+
+Genera el esqueleto del servidor Express en `stubs/`, utilizando la especificación OpenAPI.
+
+**Precaución:** la regeneración puede sobrescribir modificaciones manuales del código generado, incluidas medidas de seguridad. Se recomienda revisar los cambios antes de incorporarlos al repositorio.
+
+### Paso 8. Generar documentación HTML
+
+El proyecto contempla la generación de documentación técnica a partir del contrato OpenAPI.
+
+El comando debe verificarse en el `package.json` vigente antes de ejecutarlo. En configuraciones anteriores se utilizó:
+
+```bash
+npm run docs:html
+```
+
+---
+
+## 10. Integración continua con GitHub Actions
+
+El repositorio utiliza GitHub Actions para automatizar controles de calidad cuando se proponen o integran cambios.
+
+Las verificaciones incluyen:
+
+1. **Calidad:** análisis del código con ESLint.
+2. **Contrato:** validación de la especificación OpenAPI.
+3. **Pruebas:** ejecución de escenarios Cucumber-JS.
+4. **Documentación:** comprobaciones relacionadas con la documentación.
+5. **Seguridad:** análisis estático mediante CodeQL.
+
+Los Pull Requests permiten revisar los cambios antes de integrarlos a la rama `main`.
+
+La integración debe respetar las reglas de protección de la rama principal y las aprobaciones requeridas.
+
+[Ver ejecuciones de CI](https://github.com/kellymoraj8-ops/dossier-pukay/actions)
+
+---
+
+## 11. Seguridad y gestión de dependencias
+
+La calidad del software también incluye la identificación y tratamiento de posibles vulnerabilidades.
+
+### CodeQL
+
+CodeQL analiza el código fuente para identificar patrones potencialmente inseguros.
+
+### Dependabot
+
+Dependabot revisa las dependencias utilizadas por el proyecto y genera alertas cuando detecta versiones asociadas con vulnerabilidades conocidas.
+
+Las alertas deben evaluarse considerando:
+
+- La severidad del problema.
+- La dependencia afectada.
+- Si se utiliza en desarrollo o en ejecución.
+- La disponibilidad de una versión corregida.
+- El impacto de actualizarla sobre las pruebas existentes.
+
+**Estado de seguridad:** durante el desarrollo se identificaron alertas de dependencias, incluidas vulnerabilidades en paquetes transitivos y herramientas de desarrollo. Su tratamiento forma parte del mantenimiento del proyecto. La aprobación de las pruebas funcionales no significa que todas las vulnerabilidades estén resueltas.
+
+[Consultar seguridad del repositorio](https://github.com/kellymoraj8-ops/dossier-pukay/security)
+
+---
+
+## 12. Despliegue en Render
+
+El proyecto contempla el despliegue del servidor Node.js de la cadena CASE mediante Render.
+
+### Objetivo del despliegue
+
+Permitir que el servidor de pruebas pueda ejecutarse en un entorno accesible mediante Internet, sin depender exclusivamente de una computadora local.
+
+### Automatización del despliegue
+
+El repositorio incluye un flujo de trabajo de despliegue continuo definido en:
+
+```text
+.github/workflows/cd.yml
+```
+
+Este flujo contempla la solicitud de despliegue a Render cuando se cumplen las condiciones configuradas.
+
+### Configuración
+
+La automatización utiliza parámetros de GitHub Actions, como:
+
+| Parámetro | Función |
+|---|---|
+| `URL_PRODUCCION` | Identificar la dirección del entorno de producción |
+| `RENDER_DEPLOY_HOOK` | Autorizar la solicitud de despliegue mediante un secreto |
+
+El valor del webhook debe almacenarse como secreto y no incorporarse directamente al código fuente.
+
+### Estado del despliegue
+
+La ejecución del flujo CD debe comprobarse en GitHub Actions y en el panel de Render.
+
+Un flujo marcado como **Skipped** significa que no se ejecutó el trabajo de despliegue. No constituye evidencia de que el servidor esté funcionando en producción.
+
+La URL pública y el estado operativo deben incorporarse únicamente después de verificar el servicio desplegado.
+
+[Consultar flujo de despliegue](https://github.com/kellymoraj8-ops/dossier-pukay/actions)
+
+---
+
+## 13. Trazabilidad del proyecto
+
+La documentación utiliza identificadores para relacionar requisitos, decisiones arquitectónicas y pruebas.
 
 | Identificador | Significado |
 |---|---|
@@ -136,126 +446,67 @@ La documentación utiliza identificadores para mantener la relación entre las n
 | D1–D5 | Drivers arquitectónicos |
 | E1–E6 | Escenarios de calidad |
 | A1–A3 | Alternativas arquitectónicas |
-| ADR-001–ADR-003 | Registros de decisiones arquitectónicas |
+| ADR-001–ADR-003 | Decisiones arquitectónicas |
+| HU1–HU6 | Historias de usuario |
+| CA1–CA17 | Criterios de aceptación |
 
-Estos identificadores facilitan el seguimiento de los elementos definidos en las distintas partes del dossier.
+La trazabilidad facilita comprobar que las funcionalidades y decisiones implementadas responden a las necesidades documentadas.
 
 ---
 
-## Estado de la Documentación
+## 14. Uso responsable de inteligencia artificial
 
-| Sección | Estado |
+Durante la elaboración del dossier se utilizó ChatGPT como herramienta de apoyo para revisar, organizar y mejorar la documentación arquitectónica.
+
+Las propuestas se contrastaron con los requisitos, las decisiones del equipo y las evidencias disponibles.
+
+La responsabilidad de revisar y aprobar las decisiones arquitectónicas corresponde al equipo de desarrollo.
+
+[Consultar registro de uso y contraste de IA](docs/04-registro-ia.md)
+
+El registro incluye:
+
+- Tabla 34. Uso de IA en la elaboración del borrador del dossier.
+- Tabla 35. Registro del contraste con IA.
+- Solicitudes realizadas y resultados obtenidos.
+- Decisiones de aceptación, modificación o rechazo.
+
+---
+
+## 15. Evidencias para la defensa del proyecto
+
+Durante la presentación se recomienda demostrar:
+
+| Evidencia | Qué demuestra |
 |---|---|
-| Parte I — Contexto y Drivers | Documentada |
-| Parte II — Diagramas C4 | Documentada |
-| Decisiones Arquitectónicas (ADR) | Documentación preparada |
-| Parte III — Evaluación Arquitectónica | En desarrollo |
-| Registro del Uso de IA | Documentación preparada |
-| Revisión final de enlaces | Pendiente |
+| Diagramas C4 | Organización y separación de componentes |
+| Registros ADR | Justificación de decisiones técnicas |
+| `api/openapi.yaml` | Contrato de los servicios REST |
+| Spectral | Validación automatizada del contrato |
+| Carpeta `stubs/` | Generación de código a partir de OpenAPI |
+| Cucumber-JS | Verificación de criterios de aceptación |
+| ESLint | Revisión de calidad del código |
+| GitHub Actions | Automatización de verificaciones |
+| CodeQL y Dependabot | Identificación de problemas de seguridad |
+| Render, si está operativo | Ejecución del servidor en un entorno remoto |
 
 ---
 
-## Consideraciones Finales
+## 16. Conclusiones
 
-La documentación arquitectónica de PUKAY permite comprender la estructura general del sistema, las necesidades que motivaron su desarrollo y las decisiones técnicas adoptadas.
+PUKAY integra una aplicación móvil de seguimiento deportivo con una arquitectura cliente-servidor basada en API REST y persistencia centralizada.
 
-La organización mediante archivos Markdown facilita la consulta, actualización y mantenimiento de la información dentro del repositorio GitHub.
+El dossier permite justificar las decisiones de arquitectura mediante restricciones, drivers, escenarios de calidad, diagramas C4 y registros ADR.
 
-El dossier conserva la trazabilidad entre stakeholders, restricciones, drivers, escenarios de calidad y decisiones arquitectónicas, proporcionando una base para la evaluación y evolución futura del sistema.
+La cadena CASE complementa esta documentación con herramientas que permiten validar el contrato de la API, ejecutar pruebas automatizadas, analizar la calidad del código y registrar evidencias reproducibles.
 
----
+La incorporación de GitHub Actions, CodeQL y Dependabot contribuye a establecer un proceso de integración, revisión y mejora continua.
 
-## Ejecución de la cadena CASE de PUKAY
-
-Este repositorio incluye una cadena CASE para validar el contrato OpenAPI, ejecutar pruebas automatizadas y generar documentación técnica.
-
-### Requisitos previos
-
-- Node.js 18 o superior.
-- npm.
-- Git.
-- Conexión a Internet para instalar las dependencias.
-
-### 1. Clonar el repositorio
-
-```bash
-git clone https://github.com/kellymoraj8-ops/dossier-pukay.git
-cd dossier-pukay
-```
-
-### 2. Instalar las dependencias
-
-```bash
-npm install
-```
-
-### 3. Validar el contrato OpenAPI
-
-```bash
-npm run lint:api
-```
-
-Este comando utiliza Spectral para comprobar el archivo `api/openapi.yaml` según las reglas definidas en `.spectral.yaml`.
-
-### 4. Ejecutar el análisis de calidad
-
-```bash
-npm run lint
-```
-
-Este comando utiliza ESLint para revisar el código JavaScript.
-
-### 5. Ejecutar las pruebas automatizadas
-
-```bash
-npm test
-```
-
-Las pruebas se ejecutan mediante Cucumber-JS y comprueban escenarios derivados de los criterios de aceptación.
-
-### 6. Iniciar el servidor de pruebas
-
-```bash
-npm start
-```
-
-Ejecuta el servidor Node.js definido en `src/iniciar.js`. Se utiliza como soporte de la cadena CASE y no sustituye al backend PHP/MySQL de la aplicación Android.
-
-Para detenerlo, presionar `Ctrl + C`.
-
-### 7. Generar los stubs de OpenAPI
-
-```bash
-npm run stubs
-```
-
-Genera el esqueleto del servidor Express en la carpeta `stubs/` a partir del contrato OpenAPI.
-
-**Importante:** la regeneración puede sobrescribir modificaciones manuales realizadas dentro de `stubs/`, incluidas medidas de seguridad. Revisar los cambios antes de incorporarlos.
-
-### 8. Generar documentación de la API
-
-```bash
-npm run docs
-```
-
-Genera la documentación HTML a partir del contrato OpenAPI.
-
-### 9. Verificar los cambios en GitHub
-
-Los Pull Requests hacia `main` se someten a las verificaciones automatizadas configuradas en `.github/workflows/`, incluidas las pruebas, la validación del contrato y el análisis de seguridad.
-
-La integración debe respetar las reglas de protección de la rama principal y las revisiones requeridas.
-
-### Arquitectura de ejecución
-
-La aplicación Android utiliza Java y XML y se comunica con una API REST en PHP, conectada a MySQL.
-
-El servidor Node.js de este repositorio se utiliza para validar y probar la cadena CASE. No debe confundirse con el backend PHP de la aplicación móvil.
-
+El proyecto demuestra la relación entre la arquitectura diseñada, los requisitos funcionales y los mecanismos utilizados para comprobar la calidad del software.
 
 ---
 
 **Proyecto:** PUKAY  
 **Área:** Arquitectura de Software  
-**Año:** 2026
+**Año:** 2026  
+**Repositorio:** https://github.com/kellymoraj8-ops/dossier-pukay
